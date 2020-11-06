@@ -4,6 +4,7 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
+# 手动创建activiti或者可以使用脚本
   activiti:
     db-history-used: true
     history-level: full

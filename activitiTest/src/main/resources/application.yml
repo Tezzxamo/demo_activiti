@@ -4,7 +4,7 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
-# ÊÖ¶¯´´½¨activiti»òÕß¿ÉÒÔÊ¹ÓÃ½Å±¾
+# åˆ›å»ºactivitiæ•°æ®åº“
   activiti:
     db-history-used: true
     history-level: full
