@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="GBK" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1604650457567" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Camunda Modeler" exporterVersion="3.0.0" expressionLanguage="http://www.w3.org/1999/XPath" id="_1604650457567" name="" targetNamespace="http://sourceforge.net/bpmn/definitions/_1604650457567" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="PROCESS_1" isClosed="false" isExecutable="true" processType="None">
+    <extensionElements>
+      <yaoqiang:description/>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <endEvent id="_3" name="end">
+      <incoming>SequenceFlow_1bl1e5b</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_4" sourceRef="_2" targetRef="Task_1gpsoch"/>
+    <startEvent id="_2" isInterrupting="true" name="start" parallelMultiple="false">
+      <outgoing>_4</outgoing>
+      <outputSet/>
+    </startEvent>
+    <sequenceFlow id="SequenceFlow_1bl1e5b" sourceRef="Task_1gpsoch" targetRef="_3"/>
+    <userTask completionQuantity="1" id="Task_1gpsoch" implementation="##unspecified" isForCompensation="false" name="shenpi" startQuantity="1">
+      <incoming>_4</incoming>
+      <outgoing>SequenceFlow_1bl1e5b</outgoing>
+    </userTask>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-PROCESS_1" name="Untitled Diagram" resolution="96">
+    <bpmndi:BPMNPlane bpmnElement="PROCESS_1">
+      <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
+        <dc:Bounds height="32.0" width="32.0" x="527.0" y="105.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.02" width="24.0" x="532.5" y="140.97"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="32.0" width="32.0" x="162.0" y="105.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.02" width="28.0" x="165.5" y="140.97"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Task_1gpsoch" id="Yaoqiang-Task_1gpsoch">
+        <dc:Bounds height="80.0" width="100.0" x="318.0" y="81.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.02" width="38.0" x="349.0" y="112.49"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1bl1e5b" id="Yaoqiang-SequenceFlow_1bl1e5b">
+        <di:waypoint x="418.0" y="121.0"/>
+        <di:waypoint x="527.0078144082805" y="121.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.02" width="6.0" x="469.5" y="110.49"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
+        <di:waypoint x="193.99218559171948" y="121.0"/>
+        <di:waypoint x="318.0" y="121.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.02" width="6.0" x="253.0" y="110.49"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
