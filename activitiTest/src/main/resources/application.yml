@@ -6,6 +6,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 # 创建activiti数据库
   activiti:
+    # 自动部署：false（不允许自动部署）
+    check-process-definitions: false
     db-history-used: true
     history-level: full
     database-schema-update: true
@@ -13,3 +15,8 @@ spring:
     user:
       name: user
       password: password
+#  thymeleaf:
+#    mode: HTML
+#    encoding: utf-8
+#    # 禁用缓存
+#    cache: false
