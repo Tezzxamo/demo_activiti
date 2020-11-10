@@ -86,7 +86,7 @@ public class AppTest {
         //deploymentId是一个uuid，这里的deploymentId是一个示例，
         //在使用deploymentProcessDefinition()
         //以后会得到一个部署ID，可以通过这个部署ID来测试删除
-        String deploymentId = "17963879-22f3-11eb-8a70-94c691a0af85";
+        String deploymentId = "6904ebe8-232e-11eb-8163-94c691a0af85";
         // 普通删除，如果当前规则下有正在执行的流程，则抛异常
 //        repositoryService.deleteDeployment(deploymentId);
         // 级联删除,会删除和当前规则相关的所有信息，包括历史
