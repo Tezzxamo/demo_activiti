@@ -17,8 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
@@ -27,8 +29,8 @@ import java.util.List;
  * Hello world!
  */
 
-@SpringBootApplication
-
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
+//@SpringBootApplication
 public class DemoApplication implements CommandLineRunner {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
@@ -71,7 +73,6 @@ public class DemoApplication implements CommandLineRunner {
 //        // 让我们以“other”用户的身份登录，该用户不属于“ActivtiTeam”组
 //        securityUtil.logInAs("other");
 //
-//
 //        // Let's get all my tasks (as 'other' user)
 //        logger.info("> Getting all the tasks");
 //        Page<Task> tasks = taskRuntime.tasks(Pageable.of(0, 10));
@@ -108,14 +109,6 @@ public class DemoApplication implements CommandLineRunner {
         for (ProcessDefinition pd : processDefinitionList) {
             logger.info("\t ===> Process definition: " + pd.getKey());
         }
-        System.out.println();
-        System.out.println();
-
-
-//        List<ProcessDefinition> pageList = repositoryService.createProcessDefinitionQuery().listPage(0,15);
-//        for (ProcessDefinition pd : pageList){
-//            System.out.println(pd);
-//        }
     }
 
     @Bean

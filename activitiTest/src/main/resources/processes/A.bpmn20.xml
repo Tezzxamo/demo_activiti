@@ -20,7 +20,7 @@
       <outgoing>SequenceFlow_1l3kg84</outgoing>
     </userTask>
     <sequenceFlow id="SequenceFlow_1l3kg84" sourceRef="Task_1gpsoch" targetRef="Task_1i9rnd4"/>
-    <userTask activiti:assignee="testuser2" activiti:candidateGroups="${requireGroup}" completionQuantity="1" id="Task_1i9rnd4" implementation="##unspecified" isForCompensation="false" name="shenpi2" startQuantity="1">
+    <userTask activiti:candidateGroups="${requireGroup}" completionQuantity="1" id="Task_1i9rnd4" implementation="##unspecified" isForCompensation="false" name="shenpi2" startQuantity="1">
       <incoming>SequenceFlow_1l3kg84</incoming>
       <outgoing>SequenceFlow_1v3h4ex</outgoing>
     </userTask>

@@ -1,5 +1,8 @@
 package org.example;
 
+import org.activiti.api.runtime.shared.query.Pageable;
+import org.activiti.api.task.model.builders.TaskPayloadBuilder;
+import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -27,6 +30,13 @@ public class InclusiveTest {
 
     @Autowired
     TaskService taskService;
+
+    @Autowired
+    TaskRuntime taskRuntime;
+
+    @Autowired
+    SecurityUtil securityUtil;
+
     /**
      * 11111
      * ①部署流程定义
@@ -43,6 +53,7 @@ public class InclusiveTest {
         System.out.println("部署名称： " + deployment.getName());
         System.out.println("————————————————————————————————————————————————————");
     }
+
     /**
      * 22222
      * ②启动流程实例
@@ -76,7 +87,7 @@ public class InclusiveTest {
     @Test
     public void findMyPersonalTask() {
         System.out.println("--测试步骤333③——");
-        String processDefinitionKey = "Sampler";
+        String processDefinitionKey = "Inclusive";
         String candidateUser = "salaboy";
         String assignee = "leader1";
 
@@ -96,15 +107,15 @@ public class InclusiveTest {
 
         //输出
         if (list != null && list.size() > 0) {
-            for(Task task:list){
+            for (Task task : list) {
                 System.out.println("########################################################");
-                System.out.println("任务ID:"+task.getId());
-                System.out.println("任务名称:"+task.getName());
-                System.out.println("任务的创建时间:"+task.getCreateTime());
-                System.out.println("任务的办理人:"+task.getAssignee());
-                System.out.println("流程实例ID："+task.getProcessInstanceId());
-                System.out.println("执行对象ID:"+task.getExecutionId());
-                System.out.println("流程定义ID:"+task.getProcessDefinitionId());
+                System.out.println("任务ID:" + task.getId());
+                System.out.println("任务名称:" + task.getName());
+                System.out.println("任务的创建时间:" + task.getCreateTime());
+                System.out.println("任务的办理人:" + task.getAssignee());
+                System.out.println("流程实例ID：" + task.getProcessInstanceId());
+                System.out.println("执行对象ID:" + task.getExecutionId());
+                System.out.println("流程定义ID:" + task.getProcessDefinitionId());
                 System.out.println("########################################################");
             }
         }
@@ -113,11 +124,11 @@ public class InclusiveTest {
     /**
      * 55555
      * ⑤：完成任务：
-     *        1:申请后，对自己的申请进行确认，然后提交，使用一次complete
-     *        2:此时task来到小组审批，由小组审批确认后，使用一次complete，提交到网关
-     *        3：如果是Sampler——判断提交的day和网关分支的判别条件，走相应流程，一条分支如第二步继续审批，审批结束后结束。另一条分支直接结束。
-     *        如果是Parallel——传递给之后的两个用户task，只有当两个用户task全部审批结束后，使用了complete之后，才可以继续向后
-     *        4：若后续无其他task，此时走到end，结束。
+     * 1:申请后，对自己的申请进行确认，然后提交，使用一次complete
+     * 2:此时task来到小组审批，由小组审批确认后，使用一次complete，提交到网关
+     * 3：如果是Sampler——判断提交的day和网关分支的判别条件，走相应流程，一条分支如第二步继续审批，审批结束后结束。另一条分支直接结束。
+     * 如果是Parallel——传递给之后的两个用户task，只有当两个用户task全部审批结束后，使用了complete之后，才可以继续向后
+     * 4：若后续无其他task，此时走到end，结束。
      */
     @Test
     public void completeMyPersonalTask() {
@@ -125,13 +136,13 @@ public class InclusiveTest {
         System.out.println("########################################################");
         String processDefinitionKey = "Inclusive";
         String candidateUser = "salaboy";
-        String assignee="zzx";
+        String assignee = "zzx";
 
         Map<String, Object> map = new HashMap<>();
         //进入包含网关
         map.put("day", 1);
-        map.put("time",2);
-        map.put("doctor","salaboy,erdemedeiros,other");
+        map.put("time", 2);
+        map.put("doctor", "salaboy,erdemedeiros,other");
         //
 //        map.put("doctor","salaboy");
 //        map.put("doctor","erdemedeiros");
@@ -160,14 +171,94 @@ public class InclusiveTest {
         Task task = taskService.createTaskQuery()
                 .processDefinitionKey(processDefinitionKey)
                 .taskCandidateUser(candidateUser)
-                .taskName("星期一")
+                .taskName("星期二")
                 .singleResult();
 
-        if(task!=null){
-            taskService.claim(task.getId(),candidateUser);
+        if (task != null) {
+            taskService.claim(task.getId(), candidateUser);
             System.out.println("任务拾取完毕！");
         }
         System.out.println("########################################################");
     }
 
+    @Test
+    public void ctt2() {
+        System.out.println("--测试步骤444④——");
+        System.out.println("########################################################");
+        String processDefinitionKey = "A";//Inclusive
+        String candidateUser = "salaboy";
+        securityUtil.logInAs(candidateUser);
+
+        Task task = taskService.createTaskQuery()
+                .processDefinitionKey(processDefinitionKey)
+                .taskCandidateUser(candidateUser)
+//                .taskName("星期二")
+                .singleResult();
+        System.out.println(task.getTaskDefinitionKey());
+        taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
+        System.out.println("任务拾取完毕！");
+
+        System.out.println("########################################################");
+    }
+
+
+    /**
+     * 会将登录的指定用户的task归还任务，即将用户的task的assignee设置为null，允许其他候选成员再次拾取任务
+     */
+    @Test
+    public void ReleaseTask() {
+        securityUtil.logInAs("salaboy");
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+                .processDefinitionKey("A")
+                .processInstanceBusinessKey("1001")
+                .active().singleResult();
+        System.out.println(pi.toString());
+
+        taskRuntime.tasks(Pageable.of(0, 10))
+                .getContent()
+                .stream()
+                .forEach(task ->
+                {
+                    if (pi.getId().equals(task.getProcessInstanceId())) {
+                        taskRuntime.release(TaskPayloadBuilder.release().withTaskId(task.getId()).build());
+                    }
+                });
+
+        //归还任务
+//        taskRuntime.release(TaskPayloadBuilder.release().withTaskId(task.getId()).build());
+    }
+
+    @Test
+    public void ReleaseTask1(){
+        String processDefinitionKey = "A";
+        String candidateUser = "salaboy";
+        securityUtil.logInAs(candidateUser);
+        Task task = taskService.createTaskQuery()
+                .taskAssignee(candidateUser)
+                .processDefinitionKey(processDefinitionKey)
+                .active()
+                .singleResult();
+        taskRuntime.release(TaskPayloadBuilder.release().withTaskId(task.getId()).build());
+    }
+
+    /**
+     * 如果没有被拾取，不能使用taskRuntime.complete
+     * 但是没有被拾取，可以使用taskService.complete
+     */
+    @Test
+    public void taskRuntimeComplete() {
+        String processDefinitionKey = "Inclusive";
+        String candidateUser = "other";
+        securityUtil.logInAs(candidateUser);
+        Task task = taskService.createTaskQuery()
+                .processDefinitionKey(processDefinitionKey)
+//                .taskCandidateUser(candidateUser)
+                .taskAssignee(candidateUser)
+                .taskName("星期三")
+                .singleResult();
+        System.out.println(task.toString());
+
+        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task.getId()).build());
+        System.out.println("完成任务！");
+    }
 }

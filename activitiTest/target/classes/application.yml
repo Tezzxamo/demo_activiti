@@ -10,6 +10,7 @@ spring:
     check-process-definitions: false
     db-history-used: true
     history-level: full
+    # 默认值已经变成true了
     database-schema-update: true
   security:
     user:
