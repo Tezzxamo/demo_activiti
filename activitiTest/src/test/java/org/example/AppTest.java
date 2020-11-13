@@ -4,6 +4,7 @@ import org.activiti.api.runtime.shared.query.Pageable;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -137,6 +138,24 @@ public class AppTest {
         System.out.println("流程实例的BusinessKey:" + pi.getBusinessKey());
         System.out.println("————————————————————————————————————————————————————");
     }
+
+
+    @Test
+    public void tyt(){
+        Map<String, Object> property = new HashMap<>();
+        property.put("leaders", "salaboy,zzx");
+        ProcessInstance pi = runtimeService.startProcessInstanceByKey("A", property);
+        System.out.println(pi.toString());
+        runtimeService.deleteProcessInstance(pi.getId(),"废弃");
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        HistoryService historyService = processEngine.getHistoryService();
+        historyService.createHistoricProcessInstanceQuery()
+                .deleted()
+                .list()
+                .forEach(t-> System.out.println(t.getDeleteReason()));
+    }
+
+
 
     /**
      * 55555
