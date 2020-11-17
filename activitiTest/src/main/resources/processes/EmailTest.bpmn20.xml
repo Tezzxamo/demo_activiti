@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.3.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn2:process id="Email" name="Email" isExecutable="true">
+    <bpmn2:documentation />
+    <bpmn2:startEvent id="StartEvent_1" name="start">
+      <bpmn2:outgoing>Flow_0xy6ktd</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="EndEvent_1" name="end">
+      <bpmn2:incoming>Flow_1debvz5</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:userTask id="Activity_1w8zrxu" name="申请" activiti:assignee="#{user}">
+      <bpmn2:incoming>Flow_0xy6ktd</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_1lbp2i1</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="Flow_0xy6ktd" sourceRef="StartEvent_1" targetRef="Activity_1w8zrxu" />
+    <bpmn2:sequenceFlow id="Flow_1lbp2i1" sourceRef="Activity_1w8zrxu" targetRef="Activity_email" />
+    <bpmn2:sequenceFlow id="Flow_1debvz5" sourceRef="Activity_email" targetRef="EndEvent_1" />
+    <bpmn2:serviceTask id="Activity_email" name="发送邮件" activiti:type="mail">
+      <bpmn2:extensionElements>
+        <activiti:field name="to" stringValue="835781192@qq.com" />
+        <activiti:field name="from" stringValue="835781192@qq.com" />
+        <activiti:field name="subject" stringValue="activiti邮件测试" />
+        <activiti:field name="text" stringValue="activiti邮件测试" />
+        <activiti:field name="html" stringValue="activiti邮件测试" />
+        <activiti:field name="charset" stringValue="UTF-8" />
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1lbp2i1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_1debvz5</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Email">
+      <bpmndi:BPMNEdge id="Flow_1debvz5_di" bpmnElement="Flow_1debvz5">
+        <di:waypoint x="500" y="130" />
+        <di:waypoint x="592" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1lbp2i1_di" bpmnElement="Flow_1lbp2i1">
+        <di:waypoint x="320" y="130" />
+        <di:waypoint x="400" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xy6ktd_di" bpmnElement="Flow_0xy6ktd">
+        <di:waypoint x="148" y="130" />
+        <di:waypoint x="220" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="112" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="119" y="82" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0irytw8_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="592" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="601" y="82" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yt9uht_di" bpmnElement="Activity_1w8zrxu">
+        <dc:Bounds x="220" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0pq072d_di" bpmnElement="Activity_email">
+        <dc:Bounds x="400" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

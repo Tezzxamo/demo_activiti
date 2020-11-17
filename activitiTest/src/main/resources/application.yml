@@ -12,6 +12,13 @@ spring:
     history-level: full
     # 默认值已经变成true了
     database-schema-update: true
+
+    mail-server-host: smtp.qq.com
+    mail-server-port: 465
+    mail-server-default-from: 835781192@qq.com
+    mail-server-user-name: 835781192@qq.com
+    mail-server-password: vhpcxvukfbiybaig
+    mail-server-use-ssl: true
   security:
     user:
       name: user

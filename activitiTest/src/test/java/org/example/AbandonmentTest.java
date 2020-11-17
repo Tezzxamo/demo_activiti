@@ -75,12 +75,16 @@ public class AbandonmentTest {
 
     @Test
     public void two(){
-
-//        historyService.createHistoricProcessInstanceQuery()
-//                .list()
-//                .forEach(t-> System.out.println(t.getId()));
-        historyService.createHistoricTaskInstanceQuery()
+        historyService.createHistoricProcessInstanceQuery()
                 .list()
                 .forEach(t-> System.out.println(t.getId()));
+        System.out.println("###############################################");
+        historyService.createHistoricTaskInstanceQuery()
+                .list()
+                .forEach(t-> System.out.println(t.getTaskDefinitionKey()));
+        System.out.println("###############################################");
+        historyService.createHistoricActivityInstanceQuery()
+                .list()
+                .forEach(t-> System.out.println(t.toString()));
     }
 }
