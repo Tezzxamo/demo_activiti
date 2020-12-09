@@ -105,7 +105,7 @@ public class AppTest {
         Deployment deployment = repositoryService.createDeployment()//添加一个部署对象
                 .name("审批name")//添加部署的名字,任意
                 .key("审批key")//添加部署的key,任意
-                .addClasspathResource("processes/A.bpmn20.xml")//加载资源
+                .addClasspathResource("processes/Abandonment.bpmn20.xml")//加载资源
                 .deploy();//完成部署
         System.out.println("部署ID： " + deployment.getId());
         System.out.println("部署名称： " + deployment.getName());
@@ -128,7 +128,7 @@ public class AppTest {
         System.out.println("————————————————————————————————————————————————————");
         Map<String, Object> property = new HashMap<>();
         property.put("leaders", "salaboy,zzx");
-        String processDefinitionKey = "A";
+        String processDefinitionKey = "审批key";
         ProcessInstance pi = runtimeService.startProcessInstanceByKey(processDefinitionKey, "1001", property);
         System.out.println("流程实例的ProcessInstanceId: " + pi.getId());
         System.out.println("流程实例的ProcessDefinitionKey: " + pi.getProcessDefinitionKey());

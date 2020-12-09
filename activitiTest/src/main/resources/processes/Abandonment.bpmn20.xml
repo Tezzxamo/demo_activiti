@@ -16,7 +16,7 @@
         <bpmn2:startEvent id="StartEvent_1" name="start">
             <bpmn2:outgoing>Flow_0xy6ktd</bpmn2:outgoing>
         </bpmn2:startEvent>
-        <bpmn2:userTask id="UserTask_1" name="复核修改信息" activiti:assignee="A">
+        <bpmn2:userTask id="UserTask_1" name="复核修改信息" activiti:assignee="zzx">
             <bpmn2:incoming>SequenceFlow_0qdq7ff</bpmn2:incoming>
             <bpmn2:incoming>Flow_0h7haka</bpmn2:incoming>
             <bpmn2:outgoing>Flow_034ldxp</bpmn2:outgoing>
@@ -26,7 +26,7 @@
             <bpmn2:incoming>Flow_1jtlxea</bpmn2:incoming>
             <bpmn2:incoming>Flow_1d2ykq7</bpmn2:incoming>
         </bpmn2:endEvent>
-        <bpmn2:userTask id="UserTask_2" name="修改客户信息" activiti:assignee="A">
+        <bpmn2:userTask id="UserTask_2" name="修改客户信息" activiti:assignee="zzx">
             <bpmn2:incoming>Flow_11hwenh</bpmn2:incoming>
             <bpmn2:outgoing>Flow_0etjunj</bpmn2:outgoing>
         </bpmn2:userTask>
@@ -43,7 +43,7 @@
             <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${confirm==false}</bpmn2:conditionExpression>
         </bpmn2:sequenceFlow>
         <bpmn2:sequenceFlow id="Flow_0xy6ktd" sourceRef="StartEvent_1" targetRef="Activity_1w8zrxu"/>
-        <bpmn2:userTask id="Activity_1w8zrxu" name="录入修改信息" activiti:assignee="A">
+        <bpmn2:userTask id="Activity_1w8zrxu" name="录入修改信息" activiti:assignee="zzx">
             <bpmn2:incoming>Flow_0xy6ktd</bpmn2:incoming>
             <bpmn2:outgoing>SequenceFlow_0qdq7ff</bpmn2:outgoing>
         </bpmn2:userTask>
@@ -58,7 +58,7 @@
         </bpmn2:sequenceFlow>
         <bpmn2:sequenceFlow id="Flow_1d2ykq7" name="废弃" sourceRef="Gateway_04x6sde" targetRef="EndEvent_1">
             <bpmn2:extensionElements>
-                <activiti:executionListener class="org.example.AbandonListenerImpl" event="take"/>
+                <activiti:executionListener class="org.example.listener.AbandonListenerImpl" event="take"/>
             </bpmn2:extensionElements>
             <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${abandon==true}</bpmn2:conditionExpression>
         </bpmn2:sequenceFlow>
