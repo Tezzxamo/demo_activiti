@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+/**
+ * task事件监听，随着task的创建、拾取、完成、更新、删除、挂起、激活各类状态——记录log日志
+ */
 @Component
 public class TaskRuntimeEventListenerImpl {
     private final Logger logger = LoggerFactory.getLogger(TaskRuntimeEventListenerImpl.class);
@@ -63,6 +66,8 @@ public class TaskRuntimeEventListenerImpl {
     /**
      * 监听task取消
      *
+     * 例：如果使用runtimeService.deleteProcessInstance(taskId,DeleteReason),就会触发task取消事件
+     *
      * @return taskCancelled
      */
     @Bean
@@ -74,6 +79,8 @@ public class TaskRuntimeEventListenerImpl {
 
     /**
      * 监听task更新
+     *
+     * 例：如果更改审批人，就会触发task更新事件
      *
      * @return taskUpdated
      */
