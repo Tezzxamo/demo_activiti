@@ -1,21 +1,5 @@
 package org.example.service.impl.image;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineBreakMeasurer;
-import java.awt.font.TextAttribute;
-import java.awt.font.TextLayout;
-import java.awt.geom.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.text.AttributedCharacterIterator;
-import java.text.AttributedString;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import org.activiti.bpmn.model.AssociationDirection;
 import org.activiti.bpmn.model.EventSubProcess;
 import org.activiti.bpmn.model.GraphicInfo;
@@ -27,21 +11,35 @@ import org.activiti.image.impl.ProcessDiagramSVGGraphics2D;
 import org.activiti.image.impl.icon.*;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
-import org.example.Utils.ReflectUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
+import java.awt.font.TextAttribute;
+import java.awt.font.TextLayout;
+import java.awt.geom.*;
+import java.io.*;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class CustomProcessDiagramCanvas {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(CustomProcessDiagramCanvas.class);
+    /**
+     * 矩形、菱形、椭圆形
+     */
     public enum SHAPE_TYPE {
         Rectangle, Rhombus, Ellipse;
+
         SHAPE_TYPE() {
         }
     }
+
     protected static final int ARROW_WIDTH = 5;
     protected static final int CONDITIONAL_INDICATOR_WIDTH = 16;
     protected static final int DEFAULT_INDICATOR_WIDTH = 10;
@@ -57,23 +55,23 @@ public class CustomProcessDiagramCanvas {
      */
     protected static Color TASK_BOX_COLOR = new Color(249, 249, 249);
     protected static Color SUBPROCESS_BOX_COLOR = new Color(255, 255, 255);
-    protected static Color EVENT_COLOR = new Color(255, 255, 255);
-    protected static Color CONNECTION_COLOR = new Color(88, 88, 88);
+    protected static Color EVENT_COLOR = Color.WHITE;
+    protected static Color CONNECTION_COLOR = new Color(128, 128, 128);
     protected static Color CONDITIONAL_INDICATOR_COLOR = new Color(255, 255, 255);
-    protected static Color RUNNING_HIGHLIGHT_COLOR = Color.RED;
-    protected static Color HIGHLIGHT_COLOR = Color.GREEN;
-    protected static Color LABEL_COLOR = new Color(112, 146, 190);
+    protected static Color RUNNING_HIGHLIGHT_COLOR = Color.GREEN;
+    protected static Color HIGHLIGHT_COLOR = Color.RED;
+    protected static Color LABEL_COLOR = new Color(67, 150, 246);
     //	protected static Color			LABEL_COLOR						= Color.blue;
-    protected static Color TASK_BORDER_COLOR = new Color(187, 187, 187);
-    protected static Color EVENT_BORDER_COLOR = new Color(88, 88, 88);
-    protected static Color SUBPROCESS_BORDER_COLOR = new Color(0, 0, 0);
+    protected static Color TASK_BORDER_COLOR = new Color(149, 148, 148);
+    protected static Color EVENT_BORDER_COLOR = new Color(76, 76, 76);
+    protected static Color SUBPROCESS_BORDER_COLOR = Color.BLACK;
 
     // Fonts
-    protected static Font LABEL_FONT = new Font("微软雅黑", Font.ITALIC, 11);
-    protected static Font ANNOTATION_FONT = new Font("Arial", Font.PLAIN, FONT_SIZE);
-    protected static Font TASK_FONT = new Font("Arial", Font.PLAIN, FONT_SIZE);
+    protected static Font LABEL_FONT = new Font("微软雅黑", Font.ITALIC, 14);
+    protected static Font ANNOTATION_FONT = new Font("微软雅黑", Font.PLAIN, FONT_SIZE);
+    protected static Font TASK_FONT = new Font("微软雅黑", Font.PLAIN, FONT_SIZE);
 
-    // Strokes
+    // Strokes笔画
     //TODO 边框宽度修改
     //protected static Stroke THICK_TASK_BORDER_STROKE = new BasicStroke(3.0f);
     protected static Stroke THICK_TASK_BORDER_STROKE = new BasicStroke(2.0f);
@@ -112,9 +110,9 @@ public class CustomProcessDiagramCanvas {
     protected ProcessDiagramSVGGraphics2D g;
     protected FontMetrics fontMetrics;
     protected boolean closed;
-    protected String activityFontName = "Arial";
-    protected String labelFontName = "Arial";
-    protected String annotationFontName = "Arial";
+    protected String activityFontName = "微软雅黑";
+    protected String labelFontName = "微软雅黑";
+    protected String annotationFontName = "微软雅黑";
 
     /**
      * Creates an empty canvas with given width and height. Allows to specify minimal boundaries on the left and upper side of the canvas. This is useful for diagrams that have
@@ -131,11 +129,9 @@ public class CustomProcessDiagramCanvas {
         if (labelFontName != null) {
             this.labelFontName = labelFontName;
         }
-
         if (annotationFontName != null) {
             this.annotationFontName = annotationFontName;
         }
-
         this.initialize();
     }
 
@@ -167,7 +163,8 @@ public class CustomProcessDiagramCanvas {
         Font font = new Font(this.activityFontName, 1, 11);
         this.g.setFont(font);
         this.fontMetrics = this.g.getFontMetrics();
-
+        LABEL_FONT = new Font(this.labelFontName, 2, 10);
+        ANNOTATION_FONT = new Font(this.annotationFontName, 0, 11);
 
         USERTASK_IMAGE = new UserTaskIconType();
         SCRIPTTASK_IMAGE = new ScriptTaskIconType();
@@ -378,7 +375,7 @@ public class CustomProcessDiagramCanvas {
             this.g.setPaint(HIGHLIGHT_COLOR);
         }
 
-        java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double((double) srcX, (double) srcY, (double) targetX, (double) targetY);
+        Line2D.Double line = new Line2D.Double((double) srcX, (double) srcY, (double) targetX, (double) targetY);
         this.g.draw(line);
         this.drawArrowHead(line);
         if (conditional) {
@@ -394,14 +391,18 @@ public class CustomProcessDiagramCanvas {
     public void drawAssociation(int[] xPoints, int[] yPoints, AssociationDirection associationDirection, boolean highLighted) {
         boolean conditional = false;
         boolean isDefault = false;
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "association", associationDirection, highLighted);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "association", associationDirection, highLighted,HIGHLIGHT_COLOR);
     }
 
     public void drawSequenceflow(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, boolean highLighted) {
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,HIGHLIGHT_COLOR);
     }
 
-    public void drawConnection(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, String connectionType, AssociationDirection associationDirection, boolean highLighted) {
+    public void drawLastSequenceflow(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, boolean highLighted) {
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,RUNNING_HIGHLIGHT_COLOR);
+    }
+
+    public void drawConnection(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, String connectionType, AssociationDirection associationDirection, boolean highLighted, Color HIGHLIGHT_COLOR) {
         Paint originalPaint = this.g.getPaint();
         Stroke originalStroke = this.g.getStroke();
         this.g.setPaint(CONNECTION_COLOR);
@@ -417,28 +418,28 @@ public class CustomProcessDiagramCanvas {
             Integer sourceY = yPoints[i - 1];
             Integer targetX = xPoints[i];
             Integer targetY = yPoints[i];
-            java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double((double) sourceX, (double) sourceY, (double) targetX, (double) targetY);
+            Line2D.Double line = new Line2D.Double((double) sourceX, (double) sourceY, (double) targetX, (double) targetY);
             this.g.draw(line);
         }
 
-        java.awt.geom.Line2D.Double line;
+        Line2D.Double line;
         if (isDefault) {
-            line = new java.awt.geom.Line2D.Double((double) xPoints[0], (double) yPoints[0], (double) xPoints[1], (double) yPoints[1]);
+            line = new Line2D.Double((double) xPoints[0], (double) yPoints[0], (double) xPoints[1], (double) yPoints[1]);
             this.drawDefaultSequenceFlowIndicator(line);
         }
 
         if (conditional) {
-            line = new java.awt.geom.Line2D.Double((double) xPoints[0], (double) yPoints[0], (double) xPoints[1], (double) yPoints[1]);
+            line = new Line2D.Double((double) xPoints[0], (double) yPoints[0], (double) xPoints[1], (double) yPoints[1]);
             this.drawConditionalSequenceFlowIndicator(line);
         }
 
         if (associationDirection.equals(AssociationDirection.ONE) || associationDirection.equals(AssociationDirection.BOTH)) {
-            line = new java.awt.geom.Line2D.Double((double) xPoints[xPoints.length - 2], (double) yPoints[xPoints.length - 2], (double) xPoints[xPoints.length - 1], (double) yPoints[xPoints.length - 1]);
+            line = new Line2D.Double((double) xPoints[xPoints.length - 2], (double) yPoints[xPoints.length - 2], (double) xPoints[xPoints.length - 1], (double) yPoints[xPoints.length - 1]);
             this.drawArrowHead(line);
         }
 
         if (associationDirection.equals(AssociationDirection.BOTH)) {
-            line = new java.awt.geom.Line2D.Double((double) xPoints[1], (double) yPoints[1], (double) xPoints[0], (double) yPoints[0]);
+            line = new Line2D.Double((double) xPoints[1], (double) yPoints[1], (double) xPoints[0], (double) yPoints[0]);
             this.drawArrowHead(line);
         }
 
@@ -456,7 +457,7 @@ public class CustomProcessDiagramCanvas {
             this.g.setPaint(HIGHLIGHT_COLOR);
         }
 
-        java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double((double) srcX, (double) srcY, (double) targetX, (double) targetY);
+        Line2D.Double line = new Line2D.Double((double) srcX, (double) srcY, (double) targetX, (double) targetY);
         this.g.draw(line);
         if (conditional) {
             this.drawConditionalSequenceFlowIndicator(line);
@@ -468,7 +469,7 @@ public class CustomProcessDiagramCanvas {
 
     }
 
-    public void drawArrowHead(java.awt.geom.Line2D.Double line) {
+    public void drawArrowHead(Line2D.Double line) {
         int doubleArrowWidth = 10;
         if (doubleArrowWidth == 0) {
             doubleArrowWidth = 2;
@@ -500,11 +501,11 @@ public class CustomProcessDiagramCanvas {
         this.g.setTransform(originalTransformation);
     }
 
-    public void drawDefaultSequenceFlowIndicator(java.awt.geom.Line2D.Double line) {
+    public void drawDefaultSequenceFlowIndicator(Line2D.Double line) {
         double length = 10.0D;
         double halfOfLength = length / 2.0D;
         double f = 8.0D;
-        java.awt.geom.Line2D.Double defaultIndicator = new java.awt.geom.Line2D.Double(-halfOfLength, 0.0D, halfOfLength, 0.0D);
+        Line2D.Double defaultIndicator = new Line2D.Double(-halfOfLength, 0.0D, halfOfLength, 0.0D);
         double angle = Math.atan2(line.y2 - line.y1, line.x2 - line.x1);
         double dx = f * Math.cos(angle);
         double dy = f * Math.sin(angle);
@@ -520,7 +521,7 @@ public class CustomProcessDiagramCanvas {
         this.g.setTransform(originalTransformation);
     }
 
-    public void drawConditionalSequenceFlowIndicator(java.awt.geom.Line2D.Double line) {
+    public void drawConditionalSequenceFlowIndicator(Line2D.Double line) {
         int horizontal = 11;
         int halfOfHorizontal = horizontal / 2;
         int halfOfVertical = 8;
@@ -589,7 +590,7 @@ public class CustomProcessDiagramCanvas {
             arcR = 3;
         }
 
-        RoundRectangle2D rect = new java.awt.geom.RoundRectangle2D.Double((double) x, (double) y, (double) width, (double) height, (double) arcR, (double) arcR);
+        RoundRectangle2D rect = new RoundRectangle2D.Double((double) x, (double) y, (double) width, (double) height, (double) arcR, (double) arcR);
         this.g.fill(rect);
         this.g.setPaint(TASK_BORDER_COLOR);
         if (thickBorder) {
@@ -663,7 +664,7 @@ public class CustomProcessDiagramCanvas {
         for (Iterator var16 = layouts.iterator(); var16.hasNext(); currentY = (int) ((float) currentY + textLayout.getDescent() + textLayout.getLeading())) {
             textLayout = (TextLayout) var16.next();
             currentY = (int) ((float) currentY + textLayout.getAscent());
-            height = x + (centered ? (boxWidth - java.lang.Double.valueOf(textLayout.getBounds().getWidth()).intValue()) / 2 : 0);
+            height = x + (centered ? (boxWidth - Double.valueOf(textLayout.getBounds().getWidth()).intValue()) / 2 : 0);
             textLayout.draw(this.g, (float) height, (float) currentY);
         }
 
@@ -711,14 +712,14 @@ public class CustomProcessDiagramCanvas {
     }
 
     public void drawExpandedSubProcess(String id, String name, GraphicInfo graphicInfo, Class<?> type) {
-        RoundRectangle2D rect = new java.awt.geom.RoundRectangle2D.Double(graphicInfo.getX(), graphicInfo.getY(), graphicInfo.getWidth(), graphicInfo.getHeight(), 8.0D, 8.0D);
+        RoundRectangle2D rect = new RoundRectangle2D.Double(graphicInfo.getX(), graphicInfo.getY(), graphicInfo.getWidth(), graphicInfo.getHeight(), 8.0D, 8.0D);
         if (type.equals(EventSubProcess.class)) {
             Stroke originalStroke = this.g.getStroke();
             this.g.setStroke(EVENT_SUBPROCESS_STROKE);
             this.g.draw(rect);
             this.g.setStroke(originalStroke);
         } else if (type.equals(Transaction.class)) {
-            RoundRectangle2D outerRect = new java.awt.geom.RoundRectangle2D.Double(graphicInfo.getX() - 3.0D, graphicInfo.getY() - 3.0D, graphicInfo.getWidth() + 6.0D, graphicInfo.getHeight() + 6.0D, 8.0D, 8.0D);
+            RoundRectangle2D outerRect = new RoundRectangle2D.Double(graphicInfo.getX() - 3.0D, graphicInfo.getY() - 3.0D, graphicInfo.getWidth() + 6.0D, graphicInfo.getHeight() + 6.0D, 8.0D, 8.0D);
             Paint originalPaint = this.g.getPaint();
             this.g.setPaint(SUBPROCESS_BOX_COLOR);
             this.g.fill(outerRect);
@@ -763,9 +764,9 @@ public class CustomProcessDiagramCanvas {
         int rectangleHeight = 12;
         Rectangle rect = new Rectangle(x + (width - rectangleWidth) / 2, y + height - rectangleHeight - 3, rectangleWidth, rectangleHeight);
         this.g.draw(rect);
-        java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double(rect.getCenterX(), rect.getY() + 2.0D, rect.getCenterX(), rect.getMaxY() - 2.0D);
+        Line2D.Double line = new Line2D.Double(rect.getCenterX(), rect.getY() + 2.0D, rect.getCenterX(), rect.getMaxY() - 2.0D);
         this.g.draw(line);
-        line = new java.awt.geom.Line2D.Double(rect.getMinX() + 2.0D, rect.getCenterY(), rect.getMaxX() - 2.0D, rect.getCenterY());
+        line = new Line2D.Double(rect.getMinX() + 2.0D, rect.getCenterY(), rect.getMaxX() - 2.0D, rect.getCenterY());
         this.g.draw(line);
     }
 
@@ -810,9 +811,9 @@ public class CustomProcessDiagramCanvas {
         int height = (int) graphicInfo.getHeight();
         Stroke orginalStroke = this.g.getStroke();
         this.g.setStroke(GATEWAY_TYPE_STROKE);
-        java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double((double) (x + 10), (double) (y + height / 2), (double) (x + width - 10), (double) (y + height / 2));
+        Line2D.Double line = new Line2D.Double((double) (x + 10), (double) (y + height / 2), (double) (x + width - 10), (double) (y + height / 2));
         this.g.draw(line);
-        line = new java.awt.geom.Line2D.Double((double) (x + width / 2), (double) (y + height - 10), (double) (x + width / 2), (double) (y + 10));
+        line = new Line2D.Double((double) (x + width / 2), (double) (y + height - 10), (double) (x + width / 2), (double) (y + 10));
         this.g.draw(line);
         this.g.setStroke(orginalStroke);
         this.g.setCurrentGroupId(id);
@@ -828,9 +829,9 @@ public class CustomProcessDiagramCanvas {
         int quarterHeight = height / 4;
         Stroke orginalStroke = this.g.getStroke();
         this.g.setStroke(GATEWAY_TYPE_STROKE);
-        java.awt.geom.Line2D.Double line = new java.awt.geom.Line2D.Double((double) (x + quarterWidth + 3), (double) (y + quarterHeight + 3), (double) (x + 3 * quarterWidth - 3), (double) (y + 3 * quarterHeight - 3));
+        Line2D.Double line = new Line2D.Double((double) (x + quarterWidth + 3), (double) (y + quarterHeight + 3), (double) (x + 3 * quarterWidth - 3), (double) (y + 3 * quarterHeight - 3));
         this.g.draw(line);
-        line = new java.awt.geom.Line2D.Double((double) (x + quarterWidth + 3), (double) (y + 3 * quarterHeight - 3), (double) (x + 3 * quarterWidth - 3), (double) (y + quarterHeight + 3));
+        line = new Line2D.Double((double) (x + quarterWidth + 3), (double) (y + 3 * quarterHeight - 3), (double) (x + 3 * quarterWidth - 3), (double) (y + quarterHeight + 3));
         this.g.draw(line);
         this.g.setStroke(orginalStroke);
         this.g.setCurrentGroupId(id);
@@ -885,13 +886,13 @@ public class CustomProcessDiagramCanvas {
         Stroke orginalStroke = this.g.getStroke();
         this.g.setStroke(MULTI_INSTANCE_STROKE);
         if (sequential) {
-            this.g.draw(new java.awt.geom.Line2D.Double((double) lineX, (double) lineY, (double) (lineX + rectangleWidth), (double) lineY));
-            this.g.draw(new java.awt.geom.Line2D.Double((double) lineX, (double) (lineY + rectangleHeight / 2), (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight / 2)));
-            this.g.draw(new java.awt.geom.Line2D.Double((double) lineX, (double) (lineY + rectangleHeight), (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight)));
+            this.g.draw(new Line2D.Double((double) lineX, (double) lineY, (double) (lineX + rectangleWidth), (double) lineY));
+            this.g.draw(new Line2D.Double((double) lineX, (double) (lineY + rectangleHeight / 2), (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight / 2)));
+            this.g.draw(new Line2D.Double((double) lineX, (double) (lineY + rectangleHeight), (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight)));
         } else {
-            this.g.draw(new java.awt.geom.Line2D.Double((double) lineX, (double) lineY, (double) lineX, (double) (lineY + rectangleHeight)));
-            this.g.draw(new java.awt.geom.Line2D.Double((double) (lineX + rectangleWidth / 2), (double) lineY, (double) (lineX + rectangleWidth / 2), (double) (lineY + rectangleHeight)));
-            this.g.draw(new java.awt.geom.Line2D.Double((double) (lineX + rectangleWidth), (double) lineY, (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight)));
+            this.g.draw(new Line2D.Double((double) lineX, (double) lineY, (double) lineX, (double) (lineY + rectangleHeight)));
+            this.g.draw(new Line2D.Double((double) (lineX + rectangleWidth / 2), (double) lineY, (double) (lineX + rectangleWidth / 2), (double) (lineY + rectangleHeight)));
+            this.g.draw(new Line2D.Double((double) (lineX + rectangleWidth), (double) lineY, (double) (lineX + rectangleWidth), (double) (lineY + rectangleHeight)));
         }
 
         this.g.setStroke(orginalStroke);
@@ -902,7 +903,7 @@ public class CustomProcessDiagramCanvas {
         Stroke originalStroke = this.g.getStroke();
         this.g.setPaint(HIGHLIGHT_COLOR);
         this.g.setStroke(THICK_TASK_BORDER_STROKE);
-        RoundRectangle2D rect = new java.awt.geom.RoundRectangle2D.Double((double) x, (double) y, (double) width, (double) height, 20.0D, 20.0D);
+        RoundRectangle2D rect = new RoundRectangle2D.Double((double) x, (double) y, (double) width, (double) height, 5.0D, 5.0D);
         this.g.draw(rect);
         this.g.setPaint(originalPaint);
         this.g.setStroke(originalStroke);
@@ -912,25 +913,25 @@ public class CustomProcessDiagramCanvas {
     /**
      * Desc: 绘制正在执行中的节点红色高亮显示
      *
-     * @param x
-     * @param y
-     * @param width
-     * @param height
+     * @param x      x
+     * @param y      y
+     * @param width  width
+     * @param height height
      * @author Fuxs
      */
-    public void drawRunningActivitiHighLight(int x, int y, int width, int height) {
-        Paint originalPaint = g.getPaint();
-        Stroke originalStroke = g.getStroke();
+    public void drawRunningActivityHighLight(int x, int y, int width, int height) {
+        Paint originalPaint = this.g.getPaint();
+        Stroke originalStroke = this.g.getStroke();
 
-        g.setPaint(RUNNING_HIGHLIGHT_COLOR);
-        g.setStroke(THICK_TASK_BORDER_STROKE);
+        this.g.setPaint(RUNNING_HIGHLIGHT_COLOR);
+        this.g.setStroke(THICK_TASK_BORDER_STROKE);
         //todo 修改长方形弧度
         //RoundRectangle2D rect = new RoundRectangle2D.Double(x, y, width, height, 20, 20);
-        RoundRectangle2D rect = new RoundRectangle2D.Double(x, y, width, height, 0, 0);
-        g.draw(rect);
+        RoundRectangle2D rect = new RoundRectangle2D.Double(x, y, width, height, 5, 5);
+        this.g.draw(rect);
 
-        g.setPaint(originalPaint);
-        g.setStroke(originalStroke);
+        this.g.setPaint(originalPaint);
+        this.g.setStroke(originalStroke);
     }
 
     public void drawTextAnnotation(String id, String text, GraphicInfo graphicInfo) {
@@ -941,7 +942,7 @@ public class CustomProcessDiagramCanvas {
         Font originalFont = this.g.getFont();
         Stroke originalStroke = this.g.getStroke();
         this.g.setFont(ANNOTATION_FONT);
-        Path2D path = new java.awt.geom.Path2D.Double();
+        Path2D path = new Path2D.Double();
         x = (int) ((double) x + 0.5D);
         int lineLength = 18;
         path.moveTo((double) (x + lineLength), (double) y);
@@ -1187,7 +1188,6 @@ public class CustomProcessDiagramCanvas {
         p.setLocation(a.getX1() + ta * (a.getX2() - a.getX1()), a.getY1() + ta * (a.getY2() - a.getY1()));
         return p;
     }
-
 
 
 }

@@ -251,9 +251,9 @@ public class AcTest {
         String proInsId = task0.getProcessInstanceId();
 
         //刚开始的绘图
-        InputStream image = imageService.getFlowImgByProcInstId(proInsId);
-        String imageName = "image-0" + Instant.now().getEpochSecond() + ".svg";
-        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
+//        InputStream image = imageService.getFlowImgByProcInstId(proInsId);
+//        String imageName = "image-0" + Instant.now().getEpochSecond() + ".svg";
+//        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
 
         taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task0.getId()).build());
 
@@ -265,9 +265,9 @@ public class AcTest {
                 .singleResult();
 
         //完成第一个申请的绘图
-        InputStream image1 = imageService.getFlowImgByProcInstId(proInsId);
-        String imageName1 = "image-1" + Instant.now().getEpochSecond() + ".svg";
-        FileUtils.copyInputStreamToFile(image1, new File("processes/" + imageName1));
+//        InputStream image1 = imageService.getFlowImgByProcInstId(proInsId);
+//        String imageName1 = "image-1" + Instant.now().getEpochSecond() + ".svg";
+//        FileUtils.copyInputStreamToFile(image1, new File("processes/" + imageName1));
 
         map.put("confirm", false);
         taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task1.getId()).withVariables(map).build());
@@ -280,14 +280,19 @@ public class AcTest {
                 .singleResult();
 
         //第一个网关走完的图
-        InputStream image2 = imageService.getFlowImgByProcInstId(proInsId);
-        String imageName2 = "image-2" + Instant.now().getEpochSecond() + ".svg";
-        FileUtils.copyInputStreamToFile(image2, new File("processes/" + imageName2));
+//        InputStream image2 = imageService.getFlowImgByProcInstId(proInsId);
+//        String imageName2 = "image-2" + Instant.now().getEpochSecond() + ".svg";
+//        FileUtils.copyInputStreamToFile(image2, new File("processes/" + imageName2));
 
         map.put("abandon",false);
         taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task2.getId()).withVariables(map).build());
 
-
+        Task task3 = taskService.createTaskQuery()
+                .taskCandidateOrAssigned("zzx")
+                .active()
+                .singleResult();
+        map.put("confirm", true);
+        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task3.getId()).withVariables(map).build());
         //第二个网关走完的图
         InputStream image3 = imageService.getFlowImgByProcInstId(proInsId);
         String imageName3 = "image-3" + Instant.now().getEpochSecond() + ".svg";
@@ -295,6 +300,74 @@ public class AcTest {
 
     }
 
+    /**
+     *
+     * @throws Exception e
+     */
+    @Test
+    public void ParallelImageTest() throws Exception {
+        securityUtil.logInAs("zzx");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("user","zzx");
+        processRuntime.start(ProcessPayloadBuilder.start()
+                .withProcessDefinitionKey("Parallel")
+                .withVariables(map)
+                .build());
+
+
+        Task task0 = taskService.createTaskQuery()
+                .taskCandidateOrAssigned("zzx")
+                .includeProcessVariables()
+                .active()
+                .singleResult();
+
+        String proInsId = task0.getProcessInstanceId();
+
+        //刚开始的绘图
+//        InputStream image = imageService.getFlowImgByProcInstId(proInsId);
+//        String imageName = "image-0" + Instant.now().getEpochSecond() + ".svg";
+//        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
+
+//        taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task0.getId()).build());
+        map.put("leader", "zzx");
+        map.put("hr","other");
+        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task0.getId()).withVariables(map).build());
+
+        //////////////////////////////////
+        Task task1 = taskService.createTaskQuery()
+                .taskCandidateOrAssigned("zzx")
+                .includeProcessVariables()
+                .active()
+                .singleResult();
+
+        //完成第一个申请的绘图
+//        InputStream image1 = imageService.getFlowImgByProcInstId(proInsId);
+//        String imageName1 = "image-1" + Instant.now().getEpochSecond() + ".svg";
+//        FileUtils.copyInputStreamToFile(image1, new File("processes/" + imageName1));
+
+
+//        taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task1.getId()).build());
+        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task1.getId()).withVariables(map).build());
+
+        //////////////////////////////////
+
+//        第一个网关走完的图
+        InputStream image2 = imageService.getFlowImgByProcInstId(proInsId);
+        String imageName2 = "image-2" + Instant.now().getEpochSecond() + ".svg";
+        FileUtils.copyInputStreamToFile(image2, new File("processes/" + imageName2));
+
+
+        securityUtil.logInAs("other");
+        Task other = taskService.createTaskQuery().taskAssignee("other").singleResult();
+        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(other.getId()).build());
+
+
+        InputStream image3 = imageService.getFlowImgByProcInstId(proInsId);
+        String imageName3 = "image-33" + Instant.now().getEpochSecond() + ".svg";
+        FileUtils.copyInputStreamToFile(image3, new File("processes/" + imageName3));
+
+
+    }
 
     @Test
     public void tttt() throws Exception {

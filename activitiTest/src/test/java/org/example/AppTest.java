@@ -10,6 +10,8 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.runtime.api.impl.TaskRuntimeImpl;
+import org.apache.commons.io.FileUtils;
+import org.example.service.ImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,11 @@ public class AppTest {
     @Autowired
     SecurityUtil securityUtil;
 
+    @Autowired
+    HistoryService historyService;
+
+    @Autowired
+    ImageService imageService;
 
     /**
      * 使用内嵌数据库H2成功建立activiti数据库并创建25张表
@@ -141,20 +149,19 @@ public class AppTest {
 
 
     @Test
-    public void tyt(){
+    public void tyt() {
         Map<String, Object> property = new HashMap<>();
         property.put("leaders", "salaboy,zzx");
         ProcessInstance pi = runtimeService.startProcessInstanceByKey("A", property);
         System.out.println(pi.toString());
-        runtimeService.deleteProcessInstance(pi.getId(),"废弃");
+        runtimeService.deleteProcessInstance(pi.getId(), "废弃");
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         HistoryService historyService = processEngine.getHistoryService();
         historyService.createHistoricProcessInstanceQuery()
                 .deleted()
                 .list()
-                .forEach(t-> System.out.println(t.getDeleteReason()));
+                .forEach(t -> System.out.println(t.getDeleteReason()));
     }
-
 
 
     /**
@@ -349,7 +356,7 @@ public class AppTest {
     }
 
     @Test
-    public void completeTest(){
+    public void completeTest() {
 
         System.out.println("--测试步骤555⑤——");
         System.out.println("########################################################");
@@ -364,5 +371,67 @@ public class AppTest {
         taskService.complete(task.getId(), map);
         System.out.println("任务完成");
         System.out.println("########################################################");
+    }
+
+    @Test
+    public void suspendProcessDefinition() {
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                .latestVersion()
+//                .suspended()
+                .processDefinitionKey("Parallel")
+                .singleResult();
+//        repositoryService.suspendProcessDefinitionById(processDefinition.getId());
+
+
+        repositoryService.activateProcessDefinitionById(processDefinition.getId());
+
+        System.out.println(processDefinition.getVersion());
+
+    }
+
+    @Test
+    public void susPt() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("user","zzx");
+        runtimeService.startProcessInstanceByKey("Parallel",map);
+//        Map<String, Object> map = new HashMap<>();
+        List<Task> zzx = taskService.createTaskQuery().taskAssignee("zzx")
+                .list();
+        Task task = zzx.get(0);
+        map.put("uuid",123123);
+//        taskService.setAssignee(task.getId(),"sala");
+        taskService.setVariables(task.getId(),map);
+    }
+
+    /**
+     * 将原有的assignee变为owner，将第二个参数变成assignee:taskService.delegateTask(task.getId(),"userId");
+     */
+    @Test
+    public void susPpit(){
+        List<Task> list = taskService.createTaskQuery()
+                .processDefinitionKey("Parallel")
+                .active()
+                .list();
+        // 第二个参数是删除原因
+        runtimeService.deleteProcessInstance(list.get(0).getProcessInstanceId(),"ddd");
+    }
+
+    /**
+     * HistoricProcessInstance的 Id 就是 ProcessInstance的 Id
+     * @throws Exception e
+     */
+    @Test
+    public void imageDelShow() throws Exception {
+        List<HistoricProcessInstance> parallel = historyService.createHistoricProcessInstanceQuery()
+                .processDefinitionKey("Parallel")
+                .list();
+        HistoricProcessInstance historicProcessInstance = parallel.get(0);
+        String proInsId = historicProcessInstance.getId();
+        if (proInsId==null){
+            return;
+        }
+        InputStream image = imageService.getFlowImgByProcInstId(proInsId);
+        String imageName = "Parallel-Delete" + Instant.now().getEpochSecond() + ".svg";
+        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
     }
 }

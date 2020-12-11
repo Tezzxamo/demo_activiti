@@ -1,15 +1,10 @@
 package org.example.service.impl.image;
 
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.*;
 
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
-import org.activiti.image.ProcessDiagramGenerator;
-import org.activiti.image.exception.ActivitiImageException;
-import org.activiti.image.exception.ActivitiInterchangeInfoNotFoundException;
-import org.activiti.image.impl.DefaultProcessDiagramCanvas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,26 +15,19 @@ import org.slf4j.LoggerFactory;
  * @author Joram Barrez
  * @author Tijs Rademakers
  */
-public class CustomProcessDiagramGenerator {
+public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGenerator {
     protected static final Logger logger = LoggerFactory.getLogger(CustomProcessDiagramGenerator.class);
 
-
-    protected Map<Class<? extends BaseElement>, ActivityDrawInstruction> activityDrawInstructions = new HashMap<Class<? extends BaseElement>, ActivityDrawInstruction>();
-    protected Map<Class<? extends BaseElement>, ArtifactDrawInstruction> artifactDrawInstructions = new HashMap<Class<? extends BaseElement>, ArtifactDrawInstruction>();
-
-
-    public CustomProcessDiagramGenerator() {
-        this(1.0);
-    }
+    protected Map<Class<? extends BaseElement>, ActivityDrawInstruction> activityDrawInstructions = new HashMap<>();
+    protected Map<Class<? extends BaseElement>, ArtifactDrawInstruction> artifactDrawInstructions = new HashMap<>();
 
     /**
      * The instructions on how to draw a certain construct is
      * created statically and stored in a map for performance.
      */
-    public CustomProcessDiagramGenerator(final double scaleFactor) {
+    public CustomProcessDiagramGenerator() {
         // start event
         activityDrawInstructions.put(StartEvent.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -65,7 +53,6 @@ public class CustomProcessDiagramGenerator {
 
         // signal catch
         activityDrawInstructions.put(IntermediateCatchEvent.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -85,7 +72,6 @@ public class CustomProcessDiagramGenerator {
 
         // signal throw
         activityDrawInstructions.put(ThrowEvent.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -106,7 +92,6 @@ public class CustomProcessDiagramGenerator {
 
         // end event
         activityDrawInstructions.put(EndEvent.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -125,7 +110,6 @@ public class CustomProcessDiagramGenerator {
 
         // task
         activityDrawInstructions.put(Task.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -135,7 +119,6 @@ public class CustomProcessDiagramGenerator {
 
         // user task
         activityDrawInstructions.put(UserTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -145,7 +128,6 @@ public class CustomProcessDiagramGenerator {
 
         // script task
         activityDrawInstructions.put(ScriptTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -155,7 +137,6 @@ public class CustomProcessDiagramGenerator {
 
         // service task
         activityDrawInstructions.put(ServiceTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -166,7 +147,6 @@ public class CustomProcessDiagramGenerator {
 
         // receive task
         activityDrawInstructions.put(ReceiveTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -176,7 +156,6 @@ public class CustomProcessDiagramGenerator {
 
         // send task
         activityDrawInstructions.put(SendTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -186,7 +165,6 @@ public class CustomProcessDiagramGenerator {
 
         // manual task
         activityDrawInstructions.put(ManualTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -196,7 +174,6 @@ public class CustomProcessDiagramGenerator {
 
         // businessRuleTask task
         activityDrawInstructions.put(BusinessRuleTask.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -206,7 +183,6 @@ public class CustomProcessDiagramGenerator {
 
         // exclusive gateway
         activityDrawInstructions.put(ExclusiveGateway.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -216,7 +192,6 @@ public class CustomProcessDiagramGenerator {
 
         // inclusive gateway
         activityDrawInstructions.put(InclusiveGateway.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -226,7 +201,6 @@ public class CustomProcessDiagramGenerator {
 
         // parallel gateway
         activityDrawInstructions.put(ParallelGateway.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -236,7 +210,6 @@ public class CustomProcessDiagramGenerator {
 
         // event based gateway
         activityDrawInstructions.put(EventGateway.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -246,7 +219,6 @@ public class CustomProcessDiagramGenerator {
 
         // Boundary timer
         activityDrawInstructions.put(BoundaryEvent.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -283,7 +255,6 @@ public class CustomProcessDiagramGenerator {
 
         // Event subprocess
         activityDrawInstructions.put(EventSubProcess.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -297,7 +268,6 @@ public class CustomProcessDiagramGenerator {
 
         // call activity
         activityDrawInstructions.put(CallActivity.class, new ActivityDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
@@ -307,7 +277,6 @@ public class CustomProcessDiagramGenerator {
 
         // text annotation
         artifactDrawInstructions.put(TextAnnotation.class, new ArtifactDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, Artifact artifact) {
                 GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(artifact.getId());
@@ -318,7 +287,6 @@ public class CustomProcessDiagramGenerator {
 
         // association
         artifactDrawInstructions.put(Association.class, new ArtifactDrawInstruction() {
-
             @Override
             public void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, Artifact artifact) {
                 Association association = (Association) artifact;
@@ -358,7 +326,7 @@ public class CustomProcessDiagramGenerator {
 
 
     protected CustomProcessDiagramCanvas generateProcessDiagram(BpmnModel bpmnModel,
-                                                                List<String> highLightedActivities, List<String> runningActivitiIdList, List<String> highLightedFlows,
+                                                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows,
                                                                 String activityFontName, String labelFontName, String annotationFontName) {
 
         CustomProcessDiagramCanvas processDiagramCanvas = initProcessDiagramCanvas(bpmnModel, activityFontName, labelFontName, annotationFontName);
@@ -382,7 +350,7 @@ public class CustomProcessDiagramGenerator {
          * 绘制流程图上的所有节点和流程线，对高亮显示的节点和流程线进行特殊处理
          */
         for (FlowNode flowNode : bpmnModel.getProcesses().get(0).findFlowElementsOfType(FlowNode.class)) {
-            drawActivity(processDiagramCanvas, bpmnModel, flowNode, highLightedActivities, runningActivitiIdList,
+            drawActivity(processDiagramCanvas, bpmnModel, flowNode, highLightedActivities, runningActivityIdList,
                     highLightedFlows);
         }
 
@@ -407,7 +375,7 @@ public class CustomProcessDiagramGenerator {
      * @author Fuxs
      */
     protected void drawActivity(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode,
-                                List<String> highLightedActivities, List<String> runningActivitiIdList, List<String> highLightedFlows) {
+                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows) {
 
         ActivityDrawInstruction drawInstruction = activityDrawInstructions.get(flowNode.getClass());
         if (drawInstruction != null) {
@@ -433,21 +401,14 @@ public class CustomProcessDiagramGenerator {
                 collapsed = true;
             }
 
-//            if (scaleFactor == 1.0) {
-//                // Actually draw the markers
-//                processDiagramCanvas.drawActivityMarkers((int) graphicInfo.getX(), (int) graphicInfo.getY(),
-//                        (int) graphicInfo.getWidth(), (int) graphicInfo.getHeight(), multiInstanceSequential,
-//                        multiInstanceParallel, collapsed);
-//            }
-
             // Draw highlighted activities
             if (highLightedActivities.contains(flowNode.getId())) {
-                /**
+                /*
                  * 如果节点为当前正在处理中的节点，则红色高亮显示
                  */
-                if (runningActivitiIdList.contains(flowNode.getId())) {
+                if (runningActivityIdList.contains(flowNode.getId())) {
                     logger.debug("[绘制]-当前正在处理中的节点-红色高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
-                    drawRunningActivitiHighLight(processDiagramCanvas, bpmnModel.getGraphicInfo(flowNode.getId()));
+                    drawRunningActivityHighLight(processDiagramCanvas, bpmnModel.getGraphicInfo(flowNode.getId()));
                 } else {
                     logger.debug("[绘制]-高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
                     drawHighLight(processDiagramCanvas, bpmnModel.getGraphicInfo(flowNode.getId()));
@@ -455,8 +416,7 @@ public class CustomProcessDiagramGenerator {
             }
         }
 
-        // Outgoing transitions of activity
-        /**
+        /*
          * 绘制当前节点的流程线
          */
         for (SequenceFlow sequenceFlow : flowNode.getOutgoingFlows()) {
@@ -502,8 +462,8 @@ public class CustomProcessDiagramGenerator {
                 processDiagramCanvas.drawSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault,
                         highLighted);
 
-                // Draw sequenceflow label
-                /**
+
+                /*
                  * 绘制流程线名称
                  */
                 GraphicInfo labelGraphicInfo = bpmnModel.getLabelGraphicInfo(sequenceFlow.getId());
@@ -519,7 +479,7 @@ public class CustomProcessDiagramGenerator {
             for (FlowElement nestedFlowElement : ((FlowElementsContainer) flowNode).getFlowElements()) {
                 if (nestedFlowElement instanceof FlowNode) {
                     drawActivity(processDiagramCanvas, bpmnModel, (FlowNode) nestedFlowElement, highLightedActivities,
-                            runningActivitiIdList, highLightedFlows);
+                            runningActivityIdList, highLightedFlows);
                 }
             }
         }
@@ -640,12 +600,12 @@ public class CustomProcessDiagramGenerator {
     /**
      * Desc:绘制正在执行中的节点红色高亮显示
      *
-     * @param processDiagramCanvas
-     * @param graphicInfo
+     * @param processDiagramCanvas CustomProcessDiagramCanvas
+     * @param graphicInfo          GraphicInfo
      * @author Fuxs
      */
-    private static void drawRunningActivitiHighLight(CustomProcessDiagramCanvas processDiagramCanvas, GraphicInfo graphicInfo) {
-        processDiagramCanvas.drawRunningActivitiHighLight((int) graphicInfo.getX(), (int) graphicInfo.getY(), (int) graphicInfo
+    private static void drawRunningActivityHighLight(CustomProcessDiagramCanvas processDiagramCanvas, GraphicInfo graphicInfo) {
+        processDiagramCanvas.drawRunningActivityHighLight((int) graphicInfo.getX(), (int) graphicInfo.getY(), (int) graphicInfo
                 .getWidth(), (int) graphicInfo.getHeight());
 
     }
@@ -784,8 +744,8 @@ public class CustomProcessDiagramGenerator {
             minX = 0.0D;
             minY = 0.0D;
         }
-
-        return new CustomProcessDiagramCanvas((int) maxX + 10, (int) maxY + 10, (int) minX, (int) minY, activityFontName, labelFontName, annotationFontName);
+        //width和height代表最大的长宽
+        return new CustomProcessDiagramCanvas((int) maxX + 30, (int) maxY + 50, (int) minX, (int) minY, activityFontName, labelFontName, annotationFontName);
     }
 
     protected static List<Artifact> gatherAllArtifacts(BpmnModel bpmnModel) {
@@ -821,8 +781,7 @@ public class CustomProcessDiagramGenerator {
         return activityDrawInstructions;
     }
 
-    public void setActivityDrawInstructions(
-            Map<Class<? extends BaseElement>, ActivityDrawInstruction> activityDrawInstructions) {
+    public void setActivityDrawInstructions(Map<Class<? extends BaseElement>, ActivityDrawInstruction> activityDrawInstructions) {
         this.activityDrawInstructions = activityDrawInstructions;
     }
 
@@ -830,29 +789,41 @@ public class CustomProcessDiagramGenerator {
         return artifactDrawInstructions;
     }
 
-    public void setArtifactDrawInstructions(
-            Map<Class<? extends BaseElement>, ArtifactDrawInstruction> artifactDrawInstructions) {
+    public void setArtifactDrawInstructions(Map<Class<? extends BaseElement>, ArtifactDrawInstruction> artifactDrawInstructions) {
         this.artifactDrawInstructions = artifactDrawInstructions;
     }
 
-
     protected interface ActivityDrawInstruction {
-
         void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode);
     }
 
     protected interface ArtifactDrawInstruction {
-
         void draw(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, Artifact artifact);
     }
 
-    public InputStream generateDiagramCustom(BpmnModel bpmnModel, List<String> highLightedActivities,
-                                             List<String> runningActivitiIdList, List<String> highLightedFlows, String activityFontName,
-                                             String labelFontName, String annotationFontName) {
-        // TODO Auto-generated method stub
+    /**
+     * Desc: 输入所有的参数，以获取图像
+     *
+     * @param bpmnModel
+     * @param highLightedActivities
+     * @param runningActivityIdList
+     * @param highLightedFlows
+     * @param activityFontName
+     * @param labelFontName
+     * @param annotationFontName
+     * @return
+     */
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> runningActivityIdList,
+                                             List<String> highLightedFlows,
+                                             String activityFontName,
+                                             String labelFontName,
+                                             String annotationFontName) {
+        // TODO
         return generateProcessDiagram(bpmnModel,
                 highLightedActivities,
-                runningActivitiIdList,
+                runningActivityIdList,
                 highLightedFlows,
                 activityFontName,
                 labelFontName,
