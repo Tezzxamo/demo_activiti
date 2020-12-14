@@ -113,7 +113,7 @@ public class AppTest {
         Deployment deployment = repositoryService.createDeployment()//添加一个部署对象
                 .name("审批name")//添加部署的名字,任意
                 .key("审批key")//添加部署的key,任意
-                .addClasspathResource("processes/Abandonment.bpmn20.xml")//加载资源
+                .addClasspathResource("processes/Parallel.bpmn20.xml")//加载资源
                 .deploy();//完成部署
         System.out.println("部署ID： " + deployment.getId());
         System.out.println("部署名称： " + deployment.getName());

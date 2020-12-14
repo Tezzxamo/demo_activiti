@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.InputStream;
@@ -91,7 +92,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     *
      * @param bpmnModel
      * @param historicActivityInstanceList
      * @return
@@ -276,10 +276,6 @@ public class ImageServiceImpl implements ImageService {
                 }
             }
 
-            // 通过流程实例ID获取已经完成的历史流程实例
-            List<HistoricProcessInstance> historicFinishedProcessInstanceList = getHistoricFinishedProcessInstance(procInstId);
-            historicActivityInstanceList.forEach(t-> System.out.println(t.getActivityType()));
-
             // 定义流程画布生成器
             CustomProcessDiagramGenerator processDiagramGenerator = new CustomProcessDiagramGenerator();
 
@@ -289,11 +285,20 @@ public class ImageServiceImpl implements ImageService {
             // 获取已经流经的流程线，需要高亮显示流程已经发生流转的线id集合
             List<String> highLightedFlowsIds = getHighLightedFlows(bpmnModel, historicActivityInstanceList);
 
+            // 根据runningActivityIdList获取runningActivityFlowsIds
+            List<String> runningActivityFlowsIds = getRunningActivityFlowsIds(bpmnModel, runningActivityIdList, historicActivityInstanceList);
+//            List<String> runningActivityFlowsIds = new ArrayList<>();
+            for (Execution execution : runningActivityInstanceList) {
+                if (!StringUtils.isEmpty(execution.getActivityId())) {
+                    runningActivityIdList.add(execution.getActivityId());
+                    logger.info("执行中的节点[{}-{}-{}]", execution.getId(), execution.getActivityId(), execution.getName());
+                }
+            }
             // 使用默认配置获得流程图表生成器，并生成追踪图片字符流
             imageStream = processDiagramGenerator.generateDiagramCustom(
                     bpmnModel,
-                    highLightedActivityIdList,runningActivityIdList,highLightedFlowsIds
-                    ,"宋体","微软雅黑","黑体");
+                    highLightedActivityIdList, runningActivityIdList, highLightedFlowsIds, runningActivityFlowsIds,
+                    "宋体", "微软雅黑", "黑体");
             return imageStream;
         } catch (Exception e) {
             logger.error("通过流程实例ID【{}】获取流程图时出现异常！", e.getMessage());
@@ -303,5 +308,35 @@ public class ImageServiceImpl implements ImageService {
                 imageStream.close();
             }
         }
+    }
+
+    private List<String> getRunningActivityFlowsIds(BpmnModel bpmnModel, List<String> runningActivityIdList, List<HistoricActivityInstance> historicActivityInstanceList) {
+        List<String> runningActivityFlowsIds = new ArrayList<>();
+        // 逆序寻找，因为historicActivityInstanceList有序
+        if (CollectionUtils.isEmpty(runningActivityIdList)){
+            return runningActivityFlowsIds;
+        }
+        for (int i = historicActivityInstanceList.size() - 1; i >= 0; i--) {
+            HistoricActivityInstance historicActivityInstance = historicActivityInstanceList.get(i);
+            FlowNode flowNode = (FlowNode)bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(),true);
+            // 如果当前节点是未完成的节点
+            if (runningActivityIdList.contains(flowNode.getId())){
+                continue;
+            }
+            // 当前节点的所有流出线
+            List<SequenceFlow> outgoingFlowList = flowNode.getOutgoingFlows();
+            // 遍历所有的流出线
+            for (SequenceFlow outgoingFlow : outgoingFlowList){
+                // 获取当前节点流程线对应的下一级节点
+                FlowNode targetFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(outgoingFlow.getTargetRef(), true);
+                // 如果找到流出线的目标是runningActivityIdList中的，那么添加后将其移除，避免找到重复的都指向runningActivityIdList的流出线
+                if (runningActivityIdList.contains(targetFlowNode.getId())){
+                    runningActivityFlowsIds.add(outgoingFlow.getId());
+                    runningActivityIdList.remove(targetFlowNode.getId());
+                }
+            }
+
+        }
+        return runningActivityFlowsIds;
     }
 }

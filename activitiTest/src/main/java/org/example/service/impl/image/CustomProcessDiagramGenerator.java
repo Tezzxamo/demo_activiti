@@ -326,7 +326,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
 
 
     protected CustomProcessDiagramCanvas generateProcessDiagram(BpmnModel bpmnModel,
-                                                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows,
+                                                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows, List<String> runningActivityFlowsIds,
                                                                 String activityFontName, String labelFontName, String annotationFontName) {
 
         CustomProcessDiagramCanvas processDiagramCanvas = initProcessDiagramCanvas(bpmnModel, activityFontName, labelFontName, annotationFontName);
@@ -351,7 +351,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
          */
         for (FlowNode flowNode : bpmnModel.getProcesses().get(0).findFlowElementsOfType(FlowNode.class)) {
             drawActivity(processDiagramCanvas, bpmnModel, flowNode, highLightedActivities, runningActivityIdList,
-                    highLightedFlows);
+                    highLightedFlows, runningActivityFlowsIds);
         }
 
         // Draw artifacts
@@ -375,7 +375,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
      * @author Fuxs
      */
     protected void drawActivity(CustomProcessDiagramCanvas processDiagramCanvas, BpmnModel bpmnModel, FlowNode flowNode,
-                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows) {
+                                List<String> highLightedActivities, List<String> runningActivityIdList, List<String> highLightedFlows, List<String> runningActivityFlowsIds) {
 
         ActivityDrawInstruction drawInstruction = activityDrawInstructions.get(flowNode.getClass());
         if (drawInstruction != null) {
@@ -383,7 +383,9 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
             drawInstruction.draw(processDiagramCanvas, bpmnModel, flowNode);
 
             // Gather info on the multi instance marker
-            boolean multiInstanceSequential = false, multiInstanceParallel = false, collapsed = false;
+            boolean multiInstanceSequential = false;
+            boolean multiInstanceParallel = false;
+            boolean highLighted = false;
             if (flowNode instanceof Activity) {
                 Activity activity = (Activity) flowNode;
                 MultiInstanceLoopCharacteristics multiInstanceLoopCharacteristics = activity.getLoopCharacteristics();
@@ -393,13 +395,18 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                 }
             }
 
-            // Gather info on the collapsed marker
+            // Gather info on the highLighted marker
             GraphicInfo graphicInfo = bpmnModel.getGraphicInfo(flowNode.getId());
-            if (flowNode instanceof SubProcess) {
-                collapsed = graphicInfo.getExpanded() != null && !graphicInfo.getExpanded();
-            } else if (flowNode instanceof CallActivity) {
-                collapsed = true;
+            if (!(flowNode instanceof SubProcess)) {
+                if (flowNode instanceof CallActivity) {
+                    highLighted = true;
+                }
+            } else {
+                highLighted = graphicInfo.getExpanded() != null && !graphicInfo.getExpanded();
             }
+
+            processDiagramCanvas.drawActivityMarkers((int) graphicInfo.getX(), (int) graphicInfo.getY(), (int) graphicInfo.getWidth(), (int) graphicInfo.getHeight(), multiInstanceSequential, multiInstanceParallel, highLighted);
+
 
             // Draw highlighted activities
             if (highLightedActivities.contains(flowNode.getId())) {
@@ -459,18 +466,17 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
 
                 }
 
-                processDiagramCanvas.drawSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault,
-                        highLighted);
-
+                if (highLightedFlows.contains(sequenceFlow.getId()) && runningActivityFlowsIds.contains(sequenceFlow.getId())) {
+                    processDiagramCanvas.drawLastSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault, highLighted);
+                }else {
+                    processDiagramCanvas.drawSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault, highLighted);
+                }
 
                 /*
                  * 绘制流程线名称
                  */
-                GraphicInfo labelGraphicInfo = bpmnModel.getLabelGraphicInfo(sequenceFlow.getId());
-//				if (labelGraphicInfo != null) {
                 GraphicInfo lineCenter = getLineCenter(graphicInfoList);
                 processDiagramCanvas.drawLabel(sequenceFlow.getName(), lineCenter, true);
-//				}
             }
         }
 
@@ -479,7 +485,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
             for (FlowElement nestedFlowElement : ((FlowElementsContainer) flowNode).getFlowElements()) {
                 if (nestedFlowElement instanceof FlowNode) {
                     drawActivity(processDiagramCanvas, bpmnModel, (FlowNode) nestedFlowElement, highLightedActivities,
-                            runningActivityIdList, highLightedFlows);
+                            runningActivityIdList, highLightedFlows, runningActivityFlowsIds);
                 }
             }
         }
@@ -817,6 +823,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                                              List<String> highLightedActivities,
                                              List<String> runningActivityIdList,
                                              List<String> highLightedFlows,
+                                             List<String> runningActivityFlowsIds,
                                              String activityFontName,
                                              String labelFontName,
                                              String annotationFontName) {
@@ -825,6 +832,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                 highLightedActivities,
                 runningActivityIdList,
                 highLightedFlows,
+                runningActivityFlowsIds,
                 activityFontName,
                 labelFontName,
                 annotationFontName).generateImage();

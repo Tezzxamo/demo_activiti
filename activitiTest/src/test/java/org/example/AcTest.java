@@ -236,6 +236,11 @@ public class AcTest {
     @Test
     public void mt() throws Exception {
         securityUtil.logInAs("zzx");
+        Deployment deployment = repositoryService.createDeployment()//添加一个部署对象
+                .name("审批name")//添加部署的名字,任意
+                .key("审批key")//添加部署的key,任意
+                .addClasspathResource("processes/Abandonment.bpmn20.xml")//加载资源
+                .deploy();//完成部署
         Map<String, Object> map = new HashMap<String, Object>();
         processRuntime.start(ProcessPayloadBuilder.start()
                 .withProcessDefinitionKey("Abandonment")
@@ -328,7 +333,6 @@ public class AcTest {
 //        String imageName = "image-0" + Instant.now().getEpochSecond() + ".svg";
 //        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
 
-//        taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task0.getId()).build());
         map.put("leader", "zzx");
         map.put("hr","other");
         taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task0.getId()).withVariables(map).build());

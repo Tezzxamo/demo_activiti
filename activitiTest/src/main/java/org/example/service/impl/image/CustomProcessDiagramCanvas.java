@@ -58,8 +58,9 @@ public class CustomProcessDiagramCanvas {
     protected static Color EVENT_COLOR = Color.WHITE;
     protected static Color CONNECTION_COLOR = new Color(128, 128, 128);
     protected static Color CONDITIONAL_INDICATOR_COLOR = new Color(255, 255, 255);
-    protected static Color RUNNING_HIGHLIGHT_COLOR = Color.GREEN;
-    protected static Color HIGHLIGHT_COLOR = Color.RED;
+    protected static Color RUNNING_HIGHLIGHT_COLOR = Color.RED;
+    protected static Color LAST_HIGHLIGHT_COLOR = new Color(252, 75, 52);
+    protected static Color HIGHLIGHT_COLOR = Color.GREEN;
     protected static Color LABEL_COLOR = new Color(67, 150, 246);
     //	protected static Color			LABEL_COLOR						= Color.blue;
     protected static Color TASK_BORDER_COLOR = new Color(149, 148, 148);
@@ -399,7 +400,7 @@ public class CustomProcessDiagramCanvas {
     }
 
     public void drawLastSequenceflow(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, boolean highLighted) {
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,RUNNING_HIGHLIGHT_COLOR);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,LAST_HIGHLIGHT_COLOR);
     }
 
     public void drawConnection(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, String connectionType, AssociationDirection associationDirection, boolean highLighted, Color HIGHLIGHT_COLOR) {
