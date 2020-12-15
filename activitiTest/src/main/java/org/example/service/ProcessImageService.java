@@ -2,6 +2,6 @@ package org.example.service;
 
 import java.io.InputStream;
 
-public interface ImageService {
+public interface ProcessImageService {
     InputStream getFlowImgByProcInstId(String procInstId) throws Exception;
 }

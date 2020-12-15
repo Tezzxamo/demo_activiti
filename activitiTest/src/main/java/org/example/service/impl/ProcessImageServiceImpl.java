@@ -9,7 +9,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.runtime.Execution;
-import org.example.service.ImageService;
+import org.example.service.ProcessImageService;
 import org.example.service.impl.image.CustomProcessDiagramGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class ImageServiceImpl implements ImageService {
+public class ProcessImageServiceImpl implements ProcessImageService {
 
-    private Logger logger = LoggerFactory.getLogger(ImageServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProcessImageServiceImpl.class);
 
     private RepositoryService repositoryService;
     private HistoryService historyService;
     private RuntimeService runtimeService;
 
     @Autowired
-    public ImageServiceImpl(RepositoryService repositoryService, HistoryService historyService, RuntimeService runtimeService) {
+    public ProcessImageServiceImpl(RepositoryService repositoryService, HistoryService historyService, RuntimeService runtimeService) {
         this.repositoryService = repositoryService;
         this.historyService = historyService;
         this.runtimeService = runtimeService;
@@ -92,9 +92,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * @param bpmnModel
-     * @param historicActivityInstanceList
-     * @return
+     * @param bpmnModel bpmnModel
+     * @param historicActivityInstanceList historicActivityInstanceList
+     * @return HighLightedFlows
      */
     public List<String> getHighLightedFlows(BpmnModel bpmnModel,
                                             List<HistoricActivityInstance> historicActivityInstanceList) {
@@ -125,8 +125,8 @@ public class ImageServiceImpl implements ImageService {
             }
         }
 
-        FlowNode currentFlowNode = null;
-        FlowNode targetFlowNode = null;
+        FlowNode currentFlowNode;
+        FlowNode targetFlowNode;
         HistoricActivityInstance currentActivityInstance;
 
         // 遍历已经完成的活动实例，从每个实例的outgoingFlows中找到已经执行的
@@ -139,7 +139,7 @@ public class ImageServiceImpl implements ImageService {
             // 当前节点的所有流出线
             List<SequenceFlow> outgoingFlowList = currentFlowNode.getOutgoingFlows();
 
-            /**
+            /*
              * 遍历outgoingFlows并找到已经流转的  满足如下条件认为已经流转：
              * 1、当前节点是并行网关或者兼容网关，则通过outgoingFlows能够在历史活动中找到的全部节点均为已经流转
              * 2、当前节点是以上两种类型之外的，通过outgoingFlows查找到的时间最早的流转节点视为有效流转
@@ -158,7 +158,7 @@ public class ImageServiceImpl implements ImageService {
                     }
                 }
             } else {
-                /**
+                /*
                  * 2、当前节点不是并行网关或者兼容网关
                  * 【已解决-问题】如果当前节点有驳回功能，驳回到申请节点，
                  * 则因为申请节点在历史节点中，导致当前节点驳回到申请节点的流程线被高亮显示，但实际并没有进行驳回操作
@@ -258,13 +258,9 @@ public class ImageServiceImpl implements ImageService {
             List<HistoricActivityInstance> historicActivityInstanceList = getHistoricActivityInstancesAsc(procInstId);
 
             // 将已经执行的节点放入高亮显示节点集合
-            List<String> highLightedActivityIdList = new ArrayList<>();
-            for (HistoricActivityInstance historicActivityInstance : historicActivityInstanceList) {
-                highLightedActivityIdList.add(historicActivityInstance.getActivityId());
-                logger.info("已执行的节点ID[{}]——活动ID[{}]——活动名称：[{}]——审批人:[{}]", historicActivityInstance.getId(), historicActivityInstance
-                        .getActivityId(), historicActivityInstance.getActivityName(), historicActivityInstance
-                        .getAssignee());
-            }
+            List<String> highLightedActivityIdList = historicActivityInstanceList.stream()
+                    .map(HistoricActivityInstance::getActivityId)
+                    .collect(Collectors.toList());
 
             // 通过流程实例ID获取流程中正在执行的节点
             List<Execution> runningActivityInstanceList = getRunningActivityInstance(procInstId);
@@ -272,7 +268,6 @@ public class ImageServiceImpl implements ImageService {
             for (Execution execution : runningActivityInstanceList) {
                 if (!StringUtils.isEmpty(execution.getActivityId())) {
                     runningActivityIdList.add(execution.getActivityId());
-                    logger.info("执行中的节点[{}-{}-{}]", execution.getId(), execution.getActivityId(), execution.getName());
                 }
             }
 
@@ -287,13 +282,7 @@ public class ImageServiceImpl implements ImageService {
 
             // 根据runningActivityIdList获取runningActivityFlowsIds
             List<String> runningActivityFlowsIds = getRunningActivityFlowsIds(bpmnModel, runningActivityIdList, historicActivityInstanceList);
-//            List<String> runningActivityFlowsIds = new ArrayList<>();
-            for (Execution execution : runningActivityInstanceList) {
-                if (!StringUtils.isEmpty(execution.getActivityId())) {
-                    runningActivityIdList.add(execution.getActivityId());
-                    logger.info("执行中的节点[{}-{}-{}]", execution.getId(), execution.getActivityId(), execution.getName());
-                }
-            }
+
             // 使用默认配置获得流程图表生成器，并生成追踪图片字符流
             imageStream = processDiagramGenerator.generateDiagramCustom(
                     bpmnModel,
@@ -312,15 +301,16 @@ public class ImageServiceImpl implements ImageService {
 
     private List<String> getRunningActivityFlowsIds(BpmnModel bpmnModel, List<String> runningActivityIdList, List<HistoricActivityInstance> historicActivityInstanceList) {
         List<String> runningActivityFlowsIds = new ArrayList<>();
+        List<String> runningActivityIds = new ArrayList<>(runningActivityIdList);
         // 逆序寻找，因为historicActivityInstanceList有序
-        if (CollectionUtils.isEmpty(runningActivityIdList)){
+        if (CollectionUtils.isEmpty(runningActivityIds)){
             return runningActivityFlowsIds;
         }
         for (int i = historicActivityInstanceList.size() - 1; i >= 0; i--) {
             HistoricActivityInstance historicActivityInstance = historicActivityInstanceList.get(i);
             FlowNode flowNode = (FlowNode)bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(),true);
             // 如果当前节点是未完成的节点
-            if (runningActivityIdList.contains(flowNode.getId())){
+            if (runningActivityIds.contains(flowNode.getId())){
                 continue;
             }
             // 当前节点的所有流出线
@@ -330,9 +320,9 @@ public class ImageServiceImpl implements ImageService {
                 // 获取当前节点流程线对应的下一级节点
                 FlowNode targetFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(outgoingFlow.getTargetRef(), true);
                 // 如果找到流出线的目标是runningActivityIdList中的，那么添加后将其移除，避免找到重复的都指向runningActivityIdList的流出线
-                if (runningActivityIdList.contains(targetFlowNode.getId())){
+                if (runningActivityIds.contains(targetFlowNode.getId())){
                     runningActivityFlowsIds.add(outgoingFlow.getId());
-                    runningActivityIdList.remove(targetFlowNode.getId());
+                    runningActivityIds.remove(targetFlowNode.getId());
                 }
             }
 
