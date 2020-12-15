@@ -47,7 +47,7 @@ public class TaskRuntimeEventListenerImpl {
     public TaskRuntimeEventListener<TaskCompletedEvent> taskCompletedListener() {
         return taskCompleted -> logger.info(">>> Task Completed: '"
                 + taskCompleted.getEntity().getName()
-                + "' 它的拥有者Owner是 : " + taskCompleted.getEntity().getOwner());
+                + "' 它的审批人Assignee是 : " + taskCompleted.getEntity().getAssignee());
     }
 
     /**
@@ -101,6 +101,5 @@ public class TaskRuntimeEventListenerImpl {
                 + taskActivated.getEntity().getName()
                 + "' 它的ProcessInstanceId是 : " + taskActivated.getEntity().getProcessInstanceId());
     }
-
 
 }
