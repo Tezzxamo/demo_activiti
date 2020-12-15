@@ -8,11 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * functions:
@@ -137,13 +135,16 @@ public class ProcessConfigManager {
      * @return 流程定义是否存在(存在 - > processDefinition ； 不存在 - > 抛出异常)
      */
     public ProcessDefinition checkProcessDefinitionByName(String processDefinitionName) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        List<ProcessDefinition> processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionName(processDefinitionName)
                 .latestVersion()
-                .singleResult();
-        if (Objects.isNull(processDefinition)) {
+                .list();
+        if (CollectionUtils.isEmpty(processDefinition)) {
             throw new ActivitiObjectNotFoundException("流程定义未找到");// 待修改-整合
         }
-        return processDefinition;
+        if (processDefinition.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称或流程ID[%s], 查找到多个流程定义");
+        }
+        return processDefinition.get(0);
     }
 }

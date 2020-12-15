@@ -12,11 +12,11 @@ public interface ProcessInstanceService {
 
     void deleteProcessInstance(String processInstanceId, String reason);
 
-    void completeProcessInstance(String processInstanceId);
+    void completeProcessInstance(String processInstanceId, String username);
 
-    void claimProcessInstance(String processInstanceId,String userName);
+    void claimProcessInstance(String processInstanceId, String userName);
 
-    void mandatoryClaimProcessInstance(String processInstanceId,String userName);
+    void mandatoryClaimProcessInstance(String processInstanceId, String userName);
 
     Collection<ProcessInstance> getProcInstancesByProDefName(String processDefinitionName);
 

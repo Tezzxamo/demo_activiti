@@ -1,14 +1,14 @@
 package org.example.service;
 
-import org.activiti.engine.repository.ProcessDefinition;
+import org.example.dto.ProcessDefinitionDTO;
 
 import java.util.Collection;
 
 public interface ProcessDefinitionService {
 
-    ProcessDefinition getProcessDefinitionByName(String processDefinitionName);
+    ProcessDefinitionDTO getProcessDefinitionByName(String processDefinitionName);
 
-    Collection<ProcessDefinition> getProcessDefinitions();
+    Collection<ProcessDefinitionDTO> getProcessDefinitions();
 
     void deleteProcessDefinitionByName(String processDefinitionName);
 

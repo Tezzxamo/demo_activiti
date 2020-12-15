@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -52,6 +54,7 @@ public class ProcessInstanceManager {
      * @param processDefinitionName 流程定义name
      * @param businessKey           businessKey代表一份业务数据的标识(businessKey)
      */
+    @Transactional(rollbackFor = Exception.class)
     public void createProcessInstance(String processDefinitionName, String businessKey) {
         checkProcessDefinitionByName(processDefinitionName);
         runtimeService.startProcessInstanceByKey(processDefinitionName, businessKey);
@@ -63,6 +66,7 @@ public class ProcessInstanceManager {
      * @param processInstanceId 流程实例id
      * @param reason            删除原因
      */
+    @Transactional(rollbackFor = Exception.class)
     public void deleteProcessInstance(String processInstanceId, String reason) {
         checkProcessInstanceById(processInstanceId);
         runtimeService.deleteProcessInstance(processInstanceId, reason);
@@ -71,12 +75,21 @@ public class ProcessInstanceManager {
 
     /**
      * Desc：完成当前的流程实例，使其走向下一步
+     * 只有拥有审批人，且审批人是拾取人时才可以操作
      *
      * @param processInstanceId 流程实例id
      */
-    public void completeProcessInstance(String processInstanceId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void completeProcessInstance(String processInstanceId, String userName) {
         checkProcessInstanceById(processInstanceId);
-        taskService.complete(processInstanceId);
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .taskAssignee(userName)
+                .singleResult();
+        if (Objects.isNull(task)) {
+            throw new ActivitiObjectNotFoundException("task不存在或task没有审批人");
+        }
+        taskService.complete(task.getId());
     }
 
     /**
@@ -85,6 +98,7 @@ public class ProcessInstanceManager {
      * @param processInstanceId 流程实例id
      * @param userName          审批人
      */
+    @Transactional(rollbackFor = Exception.class)
     public void claimProcessInstance(String processInstanceId, String userName) {
         checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
@@ -99,6 +113,7 @@ public class ProcessInstanceManager {
      * @param processInstanceId 流程实例id
      * @param userName          审批人
      */
+    @Transactional(rollbackFor = Exception.class)
     public void mandatoryClaimProcessInstance(String processInstanceId, String userName) {
         checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
@@ -183,13 +198,16 @@ public class ProcessInstanceManager {
      * @return 流程实例是否存在(存在 - > processInstance ； 不存在 - > 抛出异常)
      */
     public ProcessInstance checkProcessInstanceById(String processInstanceId) {
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+        List<ProcessInstance> processInstance = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
-                .singleResult();
-        if (Objects.isNull(processInstance)) {
+                .list();
+        if (CollectionUtils.isEmpty(processInstance)) {
             throw new ActivitiObjectNotFoundException("流程实例未找到");
         }
-        return processInstance;
+        if (processInstance.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
+        }
+        return processInstance.get(0);
     }
 
     /**
@@ -199,13 +217,16 @@ public class ProcessInstanceManager {
      * @return 流程实例是否存在(存在 - > historicProcessInstance ； 不存在 - > 抛出异常)
      */
     public HistoricProcessInstance checkHistoricProcessInstanceById(String processInstanceId) {
-        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+        List<HistoricProcessInstance> historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
-                .singleResult();
-        if (Objects.isNull(historicProcessInstance)) {
+                .list();
+        if (CollectionUtils.isEmpty(historicProcessInstance)) {
             throw new ActivitiObjectNotFoundException("历史流程实例未找到");
         }
-        return historicProcessInstance;
+        if (historicProcessInstance.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
+        }
+        return historicProcessInstance.get(0);
     }
 
     /**
@@ -215,13 +236,16 @@ public class ProcessInstanceManager {
      * @return 流程定义是否存在(存在 - > processDefinition ； 不存在 - > 抛出异常)
      */
     public ProcessDefinition checkProcessDefinitionByName(String processDefinitionName) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        List<ProcessDefinition> processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionName(processDefinitionName)
                 .latestVersion()
-                .singleResult();
-        if (Objects.isNull(processDefinition)) {
+                .list();
+        if (CollectionUtils.isEmpty(processDefinition)) {
             throw new ActivitiObjectNotFoundException("流程定义未找到");// 待修改-整合
         }
-        return processDefinition;
+        if (processDefinition.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称或流程ID[%s], 查找到多个流程定义");
+        }
+        return processDefinition.get(0);
     }
 }

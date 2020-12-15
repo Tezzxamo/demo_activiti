@@ -3,15 +3,19 @@ package org.example.manager;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.example.dto.ProcessDefinitionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * ①获取单个流程定义
@@ -36,17 +40,20 @@ public class ProcessDefinitionManager {
      * @param processDefinitionName 流程定义name
      * @return ProcessDefinition
      */
-    public ProcessDefinition getProcessDefinitionByName(String processDefinitionName) {
-        return checkProcessDefinitionByName(processDefinitionName);
+    public ProcessDefinitionDTO getProcessDefinitionByName(String processDefinitionName) {
+        return toProcessDefinitionDTO(checkProcessDefinitionByName(processDefinitionName));
     }
 
     /**
      * @return 一个不可修改的流程定义列表
      */
-    public Collection<ProcessDefinition> getProcessDefinitions() {
+    public Collection<ProcessDefinitionDTO> getProcessDefinitions() {
         return Collections.unmodifiableList(repositoryService.createProcessDefinitionQuery()
                 .latestVersion()
-                .list());
+                .list())
+                .stream()
+                .map(this::toProcessDefinitionDTO)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -68,7 +75,7 @@ public class ProcessDefinitionManager {
     @Transactional(rollbackFor = Exception.class)
     public void cascadeDeleteProcessDefinitionByName(String processDefinitionName) {
         ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
-        repositoryService.deleteDeployment(processDefinition.getDeploymentId(),true);
+        repositoryService.deleteDeployment(processDefinition.getDeploymentId(), true);
     }
 
     /**
@@ -78,14 +85,23 @@ public class ProcessDefinitionManager {
      * @return 流程定义是否存在(存在 - > processDefinition ； 不存在 - > 抛出异常)
      */
     public ProcessDefinition checkProcessDefinitionByName(String processDefinitionName) {
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        List<ProcessDefinition> processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionName(processDefinitionName)
                 .latestVersion()
-                .singleResult();
-        if (Objects.isNull(processDefinition)) {
+                .list();
+        if (CollectionUtils.isEmpty(processDefinition)) {
             throw new ActivitiObjectNotFoundException("流程定义未找到");// 待修改-整合
         }
-        return processDefinition;
+        if (processDefinition.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称或流程ID[%s], 查找到多个流程定义");
+        }
+        return processDefinition.get(0);
     }
 
+    public ProcessDefinitionDTO toProcessDefinitionDTO(ProcessDefinition processDefinition) {
+        return new ProcessDefinitionDTO(
+                processDefinition.getId(),
+                processDefinition.getName(),
+                !processDefinition.isSuspended());
+    }
 }

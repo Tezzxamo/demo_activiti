@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class ProcessHistoryManager {
      * @return 历史流程实例
      */
     public HistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return checkHistoricProcessInstanceByName(processInstanceId);
+        return checkHistoricProcessInstanceById(processInstanceId);
     }
 
     /**
@@ -64,18 +65,21 @@ public class ProcessHistoryManager {
 
     /**
      * Desc:检查历史流程实例是否存在
-     *      一对一寻找
+     * 一对一寻找
      *
      * @param processInstanceId 流程实例ID
      * @return historicProcessInstance
      */
-    public HistoricProcessInstance checkHistoricProcessInstanceByName(String processInstanceId) {
-        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
+    public HistoricProcessInstance checkHistoricProcessInstanceById(String processInstanceId) {
+        List<HistoricProcessInstance> historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
-                .singleResult();
-        if (Objects.isNull(historicProcessInstance)) {
-            throw new ActivitiObjectNotFoundException("历史流程实例未找到");// 待修改-整合
+                .list();
+        if (CollectionUtils.isEmpty(historicProcessInstance)) {
+            throw new ActivitiObjectNotFoundException("历史流程实例未找到");
         }
-        return historicProcessInstance;
+        if (historicProcessInstance.size() > 1) {
+            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
+        }
+        return historicProcessInstance.get(0);
     }
 }

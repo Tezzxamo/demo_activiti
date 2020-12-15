@@ -1,9 +1,0 @@
-processImageService————获取绘制的流程图
-        ————image
-            ————定制的绘图策略
-processConfigService————激活、挂起流程定义(普通、级联)
-                    ————查询流程是否启用（单个、所有）
-processDefinitionService————删除单个流程定义（普通、级联）
-                        ————获取单个流程定义
-                        ————获取所有的流程定义
-

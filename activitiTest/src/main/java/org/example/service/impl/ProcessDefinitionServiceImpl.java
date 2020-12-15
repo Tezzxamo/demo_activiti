@@ -1,17 +1,13 @@
 package org.example.service.impl;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
-import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.example.dto.ProcessDefinitionDTO;
 import org.example.manager.ProcessDefinitionManager;
 import org.example.service.ProcessDefinitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
 
 /**
  * ①获取单个流程定义
@@ -31,7 +27,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
      * @return ProcessDefinition
      */
     @Override
-    public ProcessDefinition getProcessDefinitionByName(String processDefinitionName) {
+    public ProcessDefinitionDTO getProcessDefinitionByName(String processDefinitionName) {
         return processDefinitionManager.getProcessDefinitionByName(processDefinitionName);
     }
 
@@ -39,7 +35,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
      * @return 一个不可修改的流程定义列表
      */
     @Override
-    public Collection<ProcessDefinition> getProcessDefinitions() {
+    public Collection<ProcessDefinitionDTO> getProcessDefinitions() {
         return processDefinitionManager.getProcessDefinitions();
     }
 

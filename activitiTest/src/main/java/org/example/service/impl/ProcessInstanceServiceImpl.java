@@ -47,10 +47,11 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
      * Desc：完成当前的流程实例，使其走向下一步
      *
      * @param processInstanceId 流程实例id
+     * @param userName          用户
      */
     @Override
-    public void completeProcessInstance(String processInstanceId) {
-        processInstanceManager.completeProcessInstance(processInstanceId);
+    public void completeProcessInstance(String processInstanceId, String userName) {
+        processInstanceManager.completeProcessInstance(processInstanceId, userName);
     }
 
     /**
