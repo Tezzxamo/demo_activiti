@@ -72,6 +72,30 @@ public class ProcessInstanceManager {
         runtimeService.deleteProcessInstance(processInstanceId, reason);
     }
 
+    /**
+     * Desc:无论任何情况，清除所有的流程实例，实质上还是一个一个删除
+     *      当本身没有流程实例的时候使用此方法也不会报错
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void clearAllProcessInstances() {
+        logger.info("\t=> Clear All ProcessInstances Anyway");
+        runtimeService.createProcessInstanceQuery()
+                .list()
+                .forEach(processInstance -> runtimeService.deleteProcessInstance(processInstance.getId(),"清空所有的流程实例"));
+    }
+
+    /**
+     * Desc：清除所有给定的流程定义name有关的流程实例
+     * @param processDefinitionName 流程定义name
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void clearAllProcessInstancesByProcessDefinitionName(String processDefinitionName) {
+        logger.info("\t=> Clear All ProcessInstances By ProcessDefinitionName");
+        runtimeService.createProcessInstanceQuery()
+                .processDefinitionName(processDefinitionName)
+                .list()
+                .forEach(processInstance -> runtimeService.deleteProcessInstance(processInstance.getId(),"清空所有"+processDefinitionName+"的流程实例"));
+    }
 
     /**
      * Desc：完成当前的流程实例，使其走向下一步

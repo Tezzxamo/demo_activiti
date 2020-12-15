@@ -44,6 +44,24 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     }
 
     /**
+     * Desc:无论任何情况，清除所有的流程实例，实质上还是一个一个删除
+     *      当本身没有流程实例的时候使用此方法也不会报错
+     */
+    @Override
+    public void clearAllProcessInstances() {
+        processInstanceManager.clearAllProcessInstances();
+    }
+
+    /**
+     * Desc：清除所有给定的流程定义name有关的流程实例
+     * @param processDefinitionName 流程定义name
+     */
+    @Override
+    public void clearAllProcessInstancesByProcessDefinitionName(String processDefinitionName) {
+        processInstanceManager.clearAllProcessInstancesByProcessDefinitionName(processDefinitionName);
+    }
+
+    /**
      * Desc：完成当前的流程实例，使其走向下一步
      *
      * @param processInstanceId 流程实例id

@@ -12,6 +12,10 @@ public interface ProcessInstanceService {
 
     void deleteProcessInstance(String processInstanceId, String reason);
 
+    void clearAllProcessInstances();
+
+    void clearAllProcessInstancesByProcessDefinitionName(String processDefinitionName);
+
     void completeProcessInstance(String processInstanceId, String username);
 
     void claimProcessInstance(String processInstanceId, String userName);
