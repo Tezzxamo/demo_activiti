@@ -2,7 +2,6 @@ package org.example.listener;
 
 import org.activiti.api.task.runtime.events.*;
 import org.activiti.api.task.runtime.events.listener.TaskRuntimeEventListener;
-import org.example.DemoApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
