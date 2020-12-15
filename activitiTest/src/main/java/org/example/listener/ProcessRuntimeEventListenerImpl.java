@@ -1,12 +1,13 @@
 package org.example.listener;
 
-import org.activiti.api.model.shared.event.RuntimeEvent;
 import org.activiti.api.model.shared.event.VariableCreatedEvent;
 import org.activiti.api.process.model.events.SequenceFlowEvent;
 import org.activiti.api.process.runtime.events.*;
 import org.activiti.api.process.runtime.events.listener.ProcessRuntimeEventListener;
+import org.activiti.engine.HistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProcessRuntimeEventListenerImpl {
     private final Logger logger = LoggerFactory.getLogger(ProcessRuntimeEventListenerImpl.class);
+
+    @Autowired
+    HistoryService historyService;
 
     @Bean
     public ProcessRuntimeEventListener<ProcessCreatedEvent> ProcessCreatedListener() {
@@ -41,8 +45,8 @@ public class ProcessRuntimeEventListenerImpl {
     @Bean
     public ProcessRuntimeEventListener<ProcessCancelledEvent> ProcessCancelledListener() {
         return ProcessCancelled -> logger.info(">>> Process Cancelled: '"
-                + ProcessCancelled.getEntity().getName()
-                + "' 它的ProcessDefinitionKey是 : " + ProcessCancelled.getEntity().getProcessDefinitionKey());
+                + historyService.createHistoricProcessInstanceQuery().processInstanceId(ProcessCancelled.getEntity().getId()).singleResult().getStartUserId()
+                + "' 它的ProcessInstanceId是 : " + ProcessCancelled.getEntity().getId());
     }
 
     @Bean
