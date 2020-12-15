@@ -392,15 +392,15 @@ public class CustomProcessDiagramCanvas {
     public void drawAssociation(int[] xPoints, int[] yPoints, AssociationDirection associationDirection, boolean highLighted) {
         boolean conditional = false;
         boolean isDefault = false;
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "association", associationDirection, highLighted,HIGHLIGHT_COLOR);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "association", associationDirection, highLighted, HIGHLIGHT_COLOR);
     }
 
     public void drawSequenceflow(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, boolean highLighted) {
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,HIGHLIGHT_COLOR);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted, HIGHLIGHT_COLOR);
     }
 
     public void drawLastSequenceflow(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, boolean highLighted) {
-        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted,LAST_HIGHLIGHT_COLOR);
+        this.drawConnection(xPoints, yPoints, conditional, isDefault, "sequenceFlow", AssociationDirection.ONE, highLighted, LAST_HIGHLIGHT_COLOR);
     }
 
     public void drawConnection(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, String connectionType, AssociationDirection associationDirection, boolean highLighted, Color HIGHLIGHT_COLOR) {

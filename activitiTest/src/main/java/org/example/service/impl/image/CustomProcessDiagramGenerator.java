@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGenerator {
     protected static final Logger logger = LoggerFactory.getLogger(CustomProcessDiagramGenerator.class);
 
+    protected String ACTIVITY_FONT_NAME = "微软雅黑";
+    protected String LABEL_FONT_NAME = "微软雅黑";
+    protected String ANNOTATION_FONT_NAME = "微软雅黑";
+
     protected Map<Class<? extends BaseElement>, ActivityDrawInstruction> activityDrawInstructions = new HashMap<>();
     protected Map<Class<? extends BaseElement>, ArtifactDrawInstruction> artifactDrawInstructions = new HashMap<>();
 
@@ -819,6 +823,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
      * @param annotationFontName
      * @return
      */
+    @Override
     public InputStream generateDiagramCustom(BpmnModel bpmnModel,
                                              List<String> highLightedActivities,
                                              List<String> runningActivityIdList,
@@ -836,5 +841,85 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                 activityFontName,
                 labelFontName,
                 annotationFontName).generateImage();
+    }
+
+    @Override
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> runningActivityIdList,
+                                             List<String> highLightedFlows,
+                                             String activityFontName,
+                                             String labelFontName,
+                                             String annotationFontName) {
+        return generateProcessDiagram(bpmnModel,
+                highLightedActivities,
+                runningActivityIdList,
+                highLightedFlows,
+                Collections.emptyList(),
+                activityFontName,
+                labelFontName,
+                annotationFontName).generateImage();
+    }
+
+    @Override
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> highLightedFlows,
+                                             String activityFontName,
+                                             String labelFontName,
+                                             String annotationFontName){
+        return generateProcessDiagram(bpmnModel,
+                highLightedActivities,
+                Collections.emptyList(),
+                highLightedFlows,
+                Collections.emptyList(),
+                activityFontName,
+                labelFontName,
+                annotationFontName).generateImage();
+    }
+
+    @Override
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> runningActivityIdList,
+                                             List<String> highLightedFlows,
+                                             List<String> runningActivityFlowsIds){
+        return generateProcessDiagram(bpmnModel,
+                highLightedActivities,
+                runningActivityIdList,
+                highLightedFlows,
+                runningActivityFlowsIds,
+                ACTIVITY_FONT_NAME,
+                LABEL_FONT_NAME,
+                ANNOTATION_FONT_NAME).generateImage();
+    }
+
+    @Override
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> runningActivityIdList,
+                                             List<String> highLightedFlows){
+        return generateProcessDiagram(bpmnModel,
+                highLightedActivities,
+                runningActivityIdList,
+                highLightedFlows,
+                Collections.emptyList(),
+                ACTIVITY_FONT_NAME,
+                LABEL_FONT_NAME,
+                ANNOTATION_FONT_NAME).generateImage();
+    }
+
+    @Override
+    public InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                             List<String> highLightedActivities,
+                                             List<String> highLightedFlows){
+        return generateProcessDiagram(bpmnModel,
+                highLightedActivities,
+                Collections.emptyList(),
+                highLightedFlows,
+                Collections.emptyList(),
+                ACTIVITY_FONT_NAME,
+                LABEL_FONT_NAME,
+                ANNOTATION_FONT_NAME).generateImage();
     }
 }

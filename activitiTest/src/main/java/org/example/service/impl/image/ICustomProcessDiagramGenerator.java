@@ -4,6 +4,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.image.ProcessDiagramGenerator;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * bpmnModel bpmn模型
@@ -17,8 +18,45 @@ import java.io.InputStream;
  */
 public interface ICustomProcessDiagramGenerator{
 
+    //指定字体
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> runningActivityIdList,
+                                      List<String> highLightedFlows,
+                                      List<String> runningActivityFlowsIds,
+                                      String activityFontName,
+                                      String labelFontName,
+                                      String annotationFontName);
 
-//    InputStream  generateDiagram(BpmnModel bpmnModel, String activityFontName, String labelFontName, String annotationFontName);
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> runningActivityIdList,
+                                      List<String> highLightedFlows,
+                                      String activityFontName,
+                                      String labelFontName,
+                                      String annotationFontName);
 
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> highLightedFlows,
+                                      String activityFontName,
+                                      String labelFontName,
+                                      String annotationFontName);
+
+    //无指定字体，使用默认字体
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> runningActivityIdList,
+                                      List<String> highLightedFlows,
+                                      List<String> runningActivityFlowsIds);
+
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> runningActivityIdList,
+                                      List<String> highLightedFlows);
+
+    InputStream generateDiagramCustom(BpmnModel bpmnModel,
+                                      List<String> highLightedActivities,
+                                      List<String> highLightedFlows);
 
 }
