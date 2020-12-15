@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * 添加到流程图bpmn文件上的监听器
+ */
 public class AbandonListenerImpl implements ExecutionListener {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplication.class);
