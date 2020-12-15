@@ -1,7 +1,5 @@
 package org.example;
 
-import org.activiti.api.runtime.shared.query.Pageable;
-import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -9,9 +7,9 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.activiti.runtime.api.impl.TaskRuntimeImpl;
 import org.apache.commons.io.FileUtils;
-import org.example.service.ImageService;
+import org.example.Utils.SecurityUtil;
+import org.example.service.ProcessImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,14 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  *
@@ -73,7 +68,7 @@ public class AppTest {
     HistoryService historyService;
 
     @Autowired
-    ImageService imageService;
+    ProcessImageService imageService;
 
     /**
      * 使用内嵌数据库H2成功建立activiti数据库并创建25张表

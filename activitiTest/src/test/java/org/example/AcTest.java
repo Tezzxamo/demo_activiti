@@ -20,7 +20,8 @@ import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
-import org.example.service.ImageService;
+import org.example.Utils.SecurityUtil;
+import org.example.service.ProcessImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class AcTest {
     @Autowired
     HistoryService historyService;
     @Autowired
-    ImageService imageService;
+    ProcessImageService imageService;
 
     /**
      * 部署
@@ -581,5 +582,35 @@ public class AcTest {
         String imageName = "image-" + Instant.now().getEpochSecond() + ".svg";
         FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
     }
+    @Test
+    public void tetete(){
+//        List<ProcessInstance> a = runtimeService.createProcessInstanceQuery()
+//                .suspended()
+//                .processDefinitionName("Parallel")
+//                .list();
 
+        repositoryService.suspendProcessDefinitionByKey("Abandonment");
+
+        org.activiti.engine.repository.ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionName("Abandonment")
+                .latestVersion()
+                .active()
+                .singleResult();
+        if (Objects.isNull(processDefinition)){
+            System.out.println("流程定义0未激活或无该流程");
+        }
+
+        org.activiti.engine.repository.ProcessDefinition processDefinition1 = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionName("Abandonment")
+                .latestVersion()
+                .suspended()
+                .singleResult();
+        if (Objects.isNull(processDefinition1)){
+            System.out.println("流程定义1未激活或无该流程");
+        }
+
+
+
+
+    }
 }
