@@ -32,10 +32,10 @@ public class DemoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().active().list();
-        logger.info("> 处于激活状态的流程定义数量: " + processDefinitionList.size());
+        List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().active().latestVersion().list();
+        logger.info("> 处于激活状态的最新版本的流程定义数量: " + processDefinitionList.size());
         for (ProcessDefinition pd : processDefinitionList) {
-            logger.info("\t ===> Process definition: " + pd.getKey());
+            logger.info("\t ===> Process definition: " + pd.getKey() + " 版本：" + pd.getVersion());
         }
     }
 }
