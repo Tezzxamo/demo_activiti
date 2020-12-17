@@ -33,8 +33,9 @@ public class serviceTest {
 
     @Test
     public void t1() {// ProcessDefinitionService的测试
-        ProcessDefinition a = (ProcessDefinition) processDefinitionService.getProcessDefinitionByName("Abandonment");
-        System.out.println(a.getName());
+//        ProcessDefinition a = (ProcessDefinition) processDefinitionService.getProcessDefinitionByName("Abandonment");
+//        System.out.println(a.isSuspended());
+        processInstanceService.clearAllProcessInstancesByProcessDefinitionName("Abandonment");
     }
 
     @Test

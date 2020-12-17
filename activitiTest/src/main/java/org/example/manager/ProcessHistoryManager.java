@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class ProcessHistoryManager {
@@ -78,7 +77,7 @@ public class ProcessHistoryManager {
             throw new ActivitiObjectNotFoundException("历史流程实例未找到");
         }
         if (historicProcessInstance.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
+            throw new ArrayIndexOutOfBoundsException("同一历史流程实例id找到多个流程实例!");
         }
         return historicProcessInstance.get(0);
     }

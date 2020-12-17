@@ -3,6 +3,7 @@ package org.example.service.impl;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
+import org.example.manager.ProcessHistoryManager;
 import org.example.service.ProcessHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,12 @@ import java.util.List;
 @Service
 public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
-    @Autowired
-    HistoryService historyService;
+    ProcessHistoryManager processHistoryManager;
 
+    @Autowired
+    public ProcessHistoryServiceImpl(ProcessHistoryManager processHistoryManager) {
+        this.processHistoryManager = processHistoryManager;
+    }
 
     /**
      * Desc: 通过流程实例ID获取历史流程实例
@@ -24,9 +28,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      */
     @Override
     public HistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .singleResult();
+        return processHistoryManager.getHistoricProcessInstance(processInstanceId);
     }
 
     /**
@@ -37,11 +39,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      */
     @Override
     public List<HistoricActivityInstance> getHistoricActivityInstancesAsc(String processInstanceId) {
-        return historyService.createHistoricActivityInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .orderByHistoricActivityInstanceId()
-                .asc()
-                .list();
+        return processHistoryManager.getHistoricActivityInstancesAsc(processInstanceId);
     }
 
     /**
@@ -52,9 +50,6 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      */
     @Override
     public List<HistoricProcessInstance> getHistoricFinishedProcessInstance(String processInstanceId) {
-        return historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .finished()
-                .list();
+        return processHistoryManager.getHistoricFinishedProcessInstance(processInstanceId);
     }
 }

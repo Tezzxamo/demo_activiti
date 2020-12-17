@@ -245,6 +245,7 @@ public class AcTest {
         Map<String, Object> map = new HashMap<String, Object>();
         processRuntime.start(ProcessPayloadBuilder.start()
                 .withProcessDefinitionKey("Abandonment")
+                .withBusinessKey("1")
                 .withVariables(map)
                 .build());
 
@@ -298,7 +299,7 @@ public class AcTest {
                 .active()
                 .singleResult();
         map.put("confirm", true);
-        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task3.getId()).withVariables(map).build());
+//        taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task3.getId()).withVariables(map).build());
         //第二个网关走完的图
         InputStream image3 = imageService.getFlowImgByProcInstId(proInsId);
         String imageName3 = "image-3" + Instant.now().getEpochSecond() + ".svg";
