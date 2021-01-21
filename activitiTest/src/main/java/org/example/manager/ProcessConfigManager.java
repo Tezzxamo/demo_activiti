@@ -71,7 +71,7 @@ public class ProcessConfigManager {
     @Transactional(rollbackFor = Exception.class)
     public boolean activateProcessDefinitionByName(String processDefinitionName) {
         ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
-        repositoryService.suspendProcessDefinitionById(processDefinition.getId());
+        repositoryService.activateProcessDefinitionById(processDefinition.getId());
         return true;
     }
 

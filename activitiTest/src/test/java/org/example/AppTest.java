@@ -418,7 +418,7 @@ public class AppTest {
     @Test
     public void imageDelShow() throws Exception {
         List<HistoricProcessInstance> parallel = historyService.createHistoricProcessInstanceQuery()
-                .processDefinitionKey("Parallel")
+                .processDefinitionKey("Abandonment")
                 .list();
         HistoricProcessInstance historicProcessInstance = parallel.get(0);
         String proInsId = historicProcessInstance.getId();
@@ -426,7 +426,7 @@ public class AppTest {
             return;
         }
         InputStream image = imageService.getFlowImgByProcInstId(proInsId);
-        String imageName = "Parallel-Delete" + Instant.now().getEpochSecond() + ".svg";
-        FileUtils.copyInputStreamToFile(image, new File("processes/" + imageName));
+        String imageName = "Abandonment" + Instant.now().getEpochSecond() + ".svg";
+        FileUtils.copyInputStreamToFile(image, new File("src/main/resources/processes/" + imageName));
     }
 }
