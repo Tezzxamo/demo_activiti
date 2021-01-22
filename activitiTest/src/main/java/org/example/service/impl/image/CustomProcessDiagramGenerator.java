@@ -479,8 +479,8 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                 /*
                  * 绘制流程线名称
                  */
-                GraphicInfo lineCenter = getLineCenter(graphicInfoList);
-                processDiagramCanvas.drawLabel(sequenceFlow.getName(), lineCenter, true);
+//                GraphicInfo lineCenter = getLineCenter(graphicInfoList);
+//                processDiagramCanvas.drawLabel(sequenceFlow.getName(), lineCenter, true);
             }
         }
 

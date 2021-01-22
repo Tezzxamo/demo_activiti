@@ -1,5 +1,6 @@
 package org.example.manager;
 
+import org.activiti.bpmn.model.BaseElement;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.SequenceFlow;
@@ -73,7 +74,8 @@ public class ProcessImageManager {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(historicProcessInstance.getProcessDefinitionId());
 
             // 获取已经流经的流程线，需要高亮显示流程已经发生流转的线id集合
-            List<String> highLightedFlowsIds = getHighLightedFlows(bpmnModel, historicActivityInstanceList);
+//            List<String> highLightedFlowsIds = getHighLightedFlows(bpmnModel, historicActivityInstanceList);
+            List<String> highLightedFlowsIds = getHighLightedFlowsByIncomingFlows(bpmnModel, historicActivityInstanceList);
 
             // 根据runningActivityIdList获取runningActivityFlowsIds
             List<String> runningActivityFlowsIds = getRunningActivityFlowsIds(bpmnModel, runningActivityIdList, historicActivityInstanceList);
@@ -242,6 +244,53 @@ public class ProcessImageManager {
                 // }
             }
         }
+        return highFlows;
+    }
+
+    /**
+     * @param bpmnModel                    bpmnModel
+     * @param historicActivityInstanceList historicActivityInstanceList
+     * @return HighLightedFlows
+     */
+    public List<String> getHighLightedFlowsByIncomingFlows(BpmnModel bpmnModel,
+                                                           List<HistoricActivityInstance> historicActivityInstanceList) {
+        //historicActivityInstanceList 是 流程中已经执行的历史活动实例
+        // 已经流经的顺序流，需要高亮显示
+        List<String> highFlows = new ArrayList<>();
+
+        // 全部活动节点(包括正在执行的和未执行的)
+        List<FlowNode> allHistoricActivityNodeList = new ArrayList<>();
+
+        /*
+         * 循环的目的：
+         *           获取所有的历史节点FlowNode并放入allHistoricActivityNodeList
+         *           获取所有确定结束了的历史节点finishedActivityInstancesList
+         */
+        for (HistoricActivityInstance historicActivityInstance : historicActivityInstanceList) {
+            // 获取流程节点
+            // bpmnModel.getMainProcess()获取一个Process对象
+            FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(), true);
+            allHistoricActivityNodeList.add(flowNode);
+        }
+
+        FlowNode currentFlowNode;
+        FlowNode targetFlowNode;
+        HistoricActivityInstance currentActivityInstance;
+
+        // 循环活动节点
+        for (FlowNode flowNode : allHistoricActivityNodeList) {
+            // 获取每个活动节点的输入线
+            List<SequenceFlow> incomingFlows = flowNode.getIncomingFlows();
+
+            // 循环输入线，如果输入线的源头处于全部活动节点中，则将其包含在内
+            for (SequenceFlow sequenceFlow : incomingFlows) {
+                if (allHistoricActivityNodeList.stream().map(BaseElement::getId).collect(Collectors.toList()).contains(sequenceFlow.getSourceFlowElement().getId())){
+                    highFlows.add(sequenceFlow.getId());
+                }
+            }
+
+        }
+
         return highFlows;
     }
 
