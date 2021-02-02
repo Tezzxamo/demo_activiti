@@ -272,11 +272,6 @@ public class ProcessImageManager {
             FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(), true);
             allHistoricActivityNodeList.add(flowNode);
         }
-
-        FlowNode currentFlowNode;
-        FlowNode targetFlowNode;
-        HistoricActivityInstance currentActivityInstance;
-
         // 循环活动节点
         for (FlowNode flowNode : allHistoricActivityNodeList) {
             // 获取每个活动节点的输入线
@@ -288,9 +283,7 @@ public class ProcessImageManager {
                     highFlows.add(sequenceFlow.getId());
                 }
             }
-
         }
-
         return highFlows;
     }
 
