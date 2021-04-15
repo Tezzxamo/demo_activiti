@@ -326,4 +326,48 @@ public class ProcessImageManager {
         return runningActivityFlowsIds;
     }
 
+    /**
+     * 提供者：孙之峰（CSDN）
+     *
+     * 并行网关的流入的线不止一条，就会导致“没有完成的并行网关”的入线只有一条会成为红色，其他入线都是绿色。
+     * 解决：将第二步的操作改成获得所有“活动的未完成节点”的入线，而不是原来的找所谓的“出线”
+     */
+    public List<String> getRunningActivityFlowsIdsByIncomingFlows(BpmnModel bpmnModel, List<String> runningActivityIdList, List<HistoricActivityInstance> historicActivityInstanceList) {
+        List<String> runningActivityFlowsIds = new ArrayList<>();
+        List<String> runningActivityIds = new ArrayList<>(runningActivityIdList);
+        // 逆序寻找，因为historicActivityInstanceList有序
+        if (CollectionUtils.isEmpty(runningActivityIds)) {
+            return runningActivityFlowsIds;
+        }
+
+        // 全部活动节点(包括正在执行的和未执行的)
+        List<FlowNode> allHistoricActivityNodeList = new ArrayList<>();
+
+        for (HistoricActivityInstance historicActivityInstance : historicActivityInstanceList) {
+            // 获取流程节点
+            // bpmnModel.getMainProcess()获取一个Process对象
+            FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(), true);
+            allHistoricActivityNodeList.add(flowNode);
+        }
+
+        for (int i = historicActivityInstanceList.size() - 1; i >= 0; i--) {
+            HistoricActivityInstance historicActivityInstance = historicActivityInstanceList.get(i);
+            FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(historicActivityInstance.getActivityId(), true);
+            // 如果当前节点是未完成的节点
+            if (runningActivityIds.contains(flowNode.getId())) {
+                // 获取每个活动节点的输入线
+                List<SequenceFlow> incomingFlows = flowNode.getIncomingFlows();
+
+                // 循环输入线，如果输入线的源头处于全部活动节点中，则将其包含在内
+                for (SequenceFlow sequenceFlow : incomingFlows) {
+                    if (allHistoricActivityNodeList.stream().map(BaseElement::getId).collect(Collectors.toList()).contains(sequenceFlow.getSourceFlowElement().getId())) {
+                        runningActivityFlowsIds.add(sequenceFlow.getId());
+                    }
+                }
+            }
+
+        }
+        return runningActivityFlowsIds;
+    }
+
 }
