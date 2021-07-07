@@ -1,21 +1,18 @@
 package org.example.manager;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.Utils.VerificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
 @Component
+@Slf4j
 public class ProcessHistoryManager {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProcessHistoryManager.class);
 
     HistoryService historyService;
 
@@ -32,7 +29,7 @@ public class ProcessHistoryManager {
      * @return 历史流程实例
      */
     public HistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return checkHistoricProcessInstanceById(processInstanceId);
+        return VerificationUtils.checkHistoricProcessInstanceById(processInstanceId);
     }
 
     /**
@@ -62,23 +59,5 @@ public class ProcessHistoryManager {
                 .list();
     }
 
-    /**
-     * Desc:检查历史流程实例是否存在
-     * 一对一寻找
-     *
-     * @param processInstanceId 流程实例ID
-     * @return historicProcessInstance
-     */
-    public HistoricProcessInstance checkHistoricProcessInstanceById(String processInstanceId) {
-        List<HistoricProcessInstance> historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .list();
-        if (CollectionUtils.isEmpty(historicProcessInstance)) {
-            throw new ActivitiObjectNotFoundException("历史流程实例未找到");
-        }
-        if (historicProcessInstance.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("同一历史流程实例id找到多个流程实例!");
-        }
-        return historicProcessInstance.get(0);
-    }
+
 }

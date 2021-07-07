@@ -1,5 +1,6 @@
 package org.example.Utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 
 @Component
+@Slf4j
 public class SecurityUtil {
-
-    private Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -27,7 +27,7 @@ public class SecurityUtil {
         if (user == null) {
             throw new IllegalStateException("User " + username + " doesn't exist, please provide a valid user");
         }
-        logger.info("> Logged in as: " + username);
+        log.info("> Logged in as: " + username);
         SecurityContextHolder.setContext(new SecurityContextImpl(new Authentication() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {

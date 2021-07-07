@@ -1,14 +1,12 @@
 package org.example.manager;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.Utils.VerificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -20,9 +18,8 @@ import java.util.*;
  * ④检查单个流程定义是否存在
  */
 @Component
+@Slf4j
 public class ProcessConfigManager {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProcessConfigManager.class);
 
     RepositoryService repositoryService;
 
@@ -39,7 +36,7 @@ public class ProcessConfigManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean suspendProcessDefinitionByName(String processDefinitionName) {
-        ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.suspendProcessDefinitionById(processDefinition.getId());
         return false;
     }
@@ -56,7 +53,7 @@ public class ProcessConfigManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean cascadeSuspendProcessDefinitionByName(String processDefinitionName, boolean cascade, Date suspensionDate) {
-        ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.suspendProcessDefinitionById(processDefinition.getId(), cascade, suspensionDate);
         return false;
     }
@@ -70,7 +67,7 @@ public class ProcessConfigManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean activateProcessDefinitionByName(String processDefinitionName) {
-        ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.activateProcessDefinitionById(processDefinition.getId());
         return true;
     }
@@ -87,7 +84,7 @@ public class ProcessConfigManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean cascadeActivateProcessDefinitionByName(String processDefinitionName, boolean cascade, Date activationDate) {
-        ProcessDefinition processDefinition = checkProcessDefinitionByName(processDefinitionName);
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.activateProcessDefinitionById(processDefinition.getId(), cascade, activationDate);
         return true;
     }
@@ -98,7 +95,7 @@ public class ProcessConfigManager {
      */
     public boolean getProcessDefinitionStatusByName(String processDefinitionName) {
         // 先检查是否存在，不需要获取返回值
-        checkProcessDefinitionByName(processDefinitionName);
+        VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         // 获取激活装态下的它，如果处于激活能获取到，如果处于挂起则获取不到，能否获取到直接返回true、false
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
                 .processDefinitionName(processDefinitionName)
@@ -128,23 +125,5 @@ public class ProcessConfigManager {
         return map;
     }
 
-    /**
-     * 检查该流程定义是否存在
-     *
-     * @param processDefinitionName 流程定义name
-     * @return 流程定义是否存在(存在 - > processDefinition ； 不存在 - > 抛出异常)
-     */
-    public ProcessDefinition checkProcessDefinitionByName(String processDefinitionName) {
-        List<ProcessDefinition> processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionName(processDefinitionName)
-                .latestVersion()
-                .list();
-        if (CollectionUtils.isEmpty(processDefinition)) {
-            throw new ActivitiObjectNotFoundException("流程定义未找到");// 待修改-整合
-        }
-        if (processDefinition.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称或流程ID[%s], 查找到多个流程定义");
-        }
-        return processDefinition.get(0);
-    }
+
 }

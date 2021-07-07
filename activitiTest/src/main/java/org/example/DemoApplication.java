@@ -1,5 +1,6 @@
 package org.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
 
@@ -15,13 +16,12 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import java.util.List;
 
 /**
- * Hello world!
+ * Activiti启动类
+ * 暂时屏蔽SpringSecurity
  */
-
+@Slf4j
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
 public class DemoApplication implements CommandLineRunner {
-
-    private final Logger logger = LoggerFactory.getLogger(DemoApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
@@ -33,9 +33,9 @@ public class DemoApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<ProcessDefinition> processDefinitionList = repositoryService.createProcessDefinitionQuery().active().latestVersion().list();
-        logger.info("> 处于激活状态的最新版本的流程定义数量: " + processDefinitionList.size());
+        log.info("> 处于激活状态的最新版本的流程定义数量: " + processDefinitionList.size());
         for (ProcessDefinition pd : processDefinitionList) {
-            logger.info("\t ===> Process definition: " + pd.getKey() + " 版本：" + pd.getVersion());
+            log.info("\t ===> Process definition: " + pd.getKey() + " 版本：" + pd.getVersion());
         }
     }
 }

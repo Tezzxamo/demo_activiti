@@ -1,17 +1,14 @@
 package org.example.manager;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.example.Utils.VerificationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -29,8 +26,8 @@ import java.util.*;
  * 10检查流程实例、历史流程实例、流程定义是否存在
  */
 @Component
+@Slf4j
 public class ProcessInstanceManager {
-    private static final Logger logger = LoggerFactory.getLogger(ProcessInstanceManager.class);
 
     RepositoryService repositoryService;
     HistoryService historyService;
@@ -56,7 +53,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void createProcessInstance(String processDefinitionName, String businessKey) {
-        checkProcessDefinitionByName(processDefinitionName);
+        VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         runtimeService.startProcessInstanceByKey(processDefinitionName, businessKey);
     }
 
@@ -68,7 +65,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteProcessInstance(String processInstanceId, String reason) {
-        checkProcessInstanceById(processInstanceId);
+        VerificationUtils.checkProcessInstanceById(processInstanceId);
         runtimeService.deleteProcessInstance(processInstanceId, reason);
     }
 
@@ -78,7 +75,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void clearAllProcessInstances() {
-        logger.info("\t=> Clear All ProcessInstances Anyway");
+        log.info("\t=> Clear All ProcessInstances Anyway");
         runtimeService.createProcessInstanceQuery()
                 .list()
                 .forEach(processInstance -> runtimeService.deleteProcessInstance(processInstance.getId(),"清空所有的流程实例"));
@@ -90,7 +87,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void clearAllProcessInstancesByProcessDefinitionName(String processDefinitionName) {
-        logger.info("\t=> Clear All ProcessInstances By ProcessDefinitionName");
+        log.info("\t=> Clear All ProcessInstances By ProcessDefinitionName");
         runtimeService.createProcessInstanceQuery()
                 .processDefinitionName(processDefinitionName)
                 .list()
@@ -105,7 +102,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void completeProcessInstance(String processInstanceId, String userName) {
-        checkProcessInstanceById(processInstanceId);
+        VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .taskAssignee(userName)
@@ -124,7 +121,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void claimProcessInstance(String processInstanceId, String userName) {
-        checkProcessInstanceById(processInstanceId);
+        VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
@@ -139,7 +136,7 @@ public class ProcessInstanceManager {
      */
     @Transactional(rollbackFor = Exception.class)
     public void mandatoryClaimProcessInstance(String processInstanceId, String userName) {
-        checkProcessInstanceById(processInstanceId);
+        VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
@@ -154,7 +151,7 @@ public class ProcessInstanceManager {
      * @return 返回相关的所有流程实例，有可能是一个空的list
      */
     public Collection<ProcessInstance> getProcInstancesByProDefName(String processDefinitionName) {
-        checkProcessDefinitionByName(processDefinitionName);
+        VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         return runtimeService.createProcessInstanceQuery()
                 .processDefinitionName(processDefinitionName)
                 .list();
@@ -168,7 +165,7 @@ public class ProcessInstanceManager {
      * @return 返回相关的所有流程实例，有可能是一个空的list
      */
     public Collection<ProcessInstance> getProcInstancesByProDefNameAndStatus(String processDefinitionName, boolean status) {
-        checkProcessDefinitionByName(processDefinitionName);
+        VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         if (status) {
             return runtimeService.createProcessInstanceQuery()
                     .processDefinitionName(processDefinitionName)
@@ -190,7 +187,7 @@ public class ProcessInstanceManager {
      * @return processInstance
      */
     public ProcessInstance getProcInstanceByProDefNameAndBusinessKey(String processDefinitionName, String businessKey) {
-        checkProcessDefinitionByName(processDefinitionName);
+        VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
                 .processDefinitionName(processDefinitionName)
                 .processInstanceBusinessKey(businessKey)
@@ -209,67 +206,11 @@ public class ProcessInstanceManager {
      * @return 正在执行的节点
      */
     public List<Execution> getRunningActivityInstance(String processInstanceId) {
-        checkHistoricProcessInstanceById(processInstanceId);
+        VerificationUtils.checkHistoricProcessInstanceById(processInstanceId);
         return runtimeService.createExecutionQuery()
                 .processInstanceId(processInstanceId)
                 .list();
     }
 
-    /**
-     * 检查该流程实例是否存在
-     *
-     * @param processInstanceId 流程实例name
-     * @return 流程实例是否存在(存在 - > processInstance ； 不存在 - > 抛出异常)
-     */
-    public ProcessInstance checkProcessInstanceById(String processInstanceId) {
-        List<ProcessInstance> processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .list();
-        if (CollectionUtils.isEmpty(processInstance)) {
-            throw new ActivitiObjectNotFoundException("流程实例未找到");
-        }
-        if (processInstance.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
-        }
-        return processInstance.get(0);
-    }
 
-    /**
-     * 检查该历史流程实例是否存在
-     *
-     * @param processInstanceId 流程实例name
-     * @return 流程实例是否存在(存在 - > historicProcessInstance ； 不存在 - > 抛出异常)
-     */
-    public HistoricProcessInstance checkHistoricProcessInstanceById(String processInstanceId) {
-        List<HistoricProcessInstance> historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .list();
-        if (CollectionUtils.isEmpty(historicProcessInstance)) {
-            throw new ActivitiObjectNotFoundException("历史流程实例未找到");
-        }
-        if (historicProcessInstance.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
-        }
-        return historicProcessInstance.get(0);
-    }
-
-    /**
-     * 检查该流程定义是否存在
-     *
-     * @param processDefinitionName 流程定义name
-     * @return 流程定义是否存在(存在 - > processDefinition ； 不存在 - > 抛出异常)
-     */
-    public ProcessDefinition checkProcessDefinitionByName(String processDefinitionName) {
-        List<ProcessDefinition> processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionName(processDefinitionName)
-                .latestVersion()
-                .list();
-        if (CollectionUtils.isEmpty(processDefinition)) {
-            throw new ActivitiObjectNotFoundException("流程定义未找到");// 待修改-整合
-        }
-        if (processDefinition.size() > 1) {
-            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称或流程ID[%s], 查找到多个流程定义");
-        }
-        return processDefinition.get(0);
-    }
 }

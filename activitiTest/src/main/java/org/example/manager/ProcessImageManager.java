@@ -1,5 +1,6 @@
 package org.example.manager;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.BaseElement;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
@@ -8,10 +9,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.runtime.Execution;
-import org.example.service.impl.ProcessImageServiceImpl;
 import org.example.service.impl.image.CustomProcessDiagramGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -24,8 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ProcessImageManager {
-    private final Logger logger = LoggerFactory.getLogger(ProcessImageManager.class);
 
     RepositoryService repositoryService;
     ProcessHistoryManager processHistoryManager;
@@ -42,7 +40,7 @@ public class ProcessImageManager {
 
     public InputStream getFlowImgByProcInstId(String procInstId) throws Exception {
         if (StringUtils.isEmpty(procInstId)) {
-            logger.error("[错误]-传入的参数procInstId为空！");
+            log.error("[错误]-传入的参数procInstId为空！");
             throw new Exception("[异常]-传入的参数procInstId为空！");
         }
         InputStream imageStream = null;
@@ -87,7 +85,7 @@ public class ProcessImageManager {
                     "宋体", "微软雅黑", "黑体");
             return imageStream;
         } catch (Exception e) {
-            logger.error("通过流程实例ID【{}】获取流程图时出现异常！", e.getMessage());
+            log.error("通过流程实例ID【{}】获取流程图时出现异常！", e.getMessage());
             throw new Exception("通过流程实例ID" + procInstId + "获取流程图时出现异常！", e);
         } finally {
             if (imageStream != null) {
@@ -180,8 +178,8 @@ public class ProcessImageManager {
 
                 // 循环当前节点的所有流出线
                 // 循环所有的历史节点
-//                logger.info("【开始】-匹配当前节点-ActivityId=【{}】需要高亮显示的流出线", currentActivityId);
-//                logger.info("循环历史节点");
+//                log.info("【开始】-匹配当前节点-ActivityId=【{}】需要高亮显示的流出线", currentActivityId);
+//                log.info("循环历史节点");
 
                 for (int i = 0; i < size; i++) {
                     // // 如果当前节点流程线对应的下级节点在历史节点中，则该条流程线进行高亮显示（【问题】有驳回流程线时，即使没有进行驳回操作，因为申请节点在历史节点中，也会将驳回流程线高亮显示-_-||）
@@ -195,40 +193,40 @@ public class ProcessImageManager {
 
                     // 历史节点
                     historicActivityInstance = historicActivityInstanceList.get(i);
-//                    logger.info("第【{}/{}】个历史节点-ActivityId=【{}】", i + 1, size, historicActivityInstance.getActivityId());
+//                    log.info("第【{}/{}】个历史节点-ActivityId=【{}】", i + 1, size, historicActivityInstance.getActivityId());
 
                     // 如果循环历史节点中的id等于当前节点id，从当前历史节点继续先后查找是否有当前流程线等于的节点
                     // 历史节点的序号需要大于等于已经完成历史节点的序号，放置驳回重审一个节点经过两次时只取第一次的流出线高亮显示，第二次的不显示
                     if (i >= k && historicActivityInstance.getActivityId().equals(currentActivityId)) {
-//                        logger.info("第【{}】个历史节点和当前节点一致-ActivityId=【{}】", i + 1, historicActivityInstance.getActivityId());
+//                        log.info("第【{}】个历史节点和当前节点一致-ActivityId=【{}】", i + 1, historicActivityInstance.getActivityId());
                         ifStartFind = true;
                         // 跳过当前节点继续查找下一个节点
                         continue;
                     }
                     if (ifStartFind) {
-//                        logger.info("[开始]-循环当前节点-ActivityId=【{}】的所有流出线", currentActivityId);
+//                        log.info("[开始]-循环当前节点-ActivityId=【{}】的所有流出线", currentActivityId);
 
                         ifFinded = false;
                         for (SequenceFlow sequenceFlow : outgoingFlowList) {
                             // 如果当前节点流程线对应的下级节点在其后面的历史节点中，则该条流程线进行高亮显示
                             // 【问题】
-//                            logger.info("当前流出线的下级节点=[{}]", sequenceFlow.getTargetRef());
+//                            log.info("当前流出线的下级节点=[{}]", sequenceFlow.getTargetRef());
                             if (historicActivityInstance.getActivityId().equals(sequenceFlow.getTargetRef())) {
-//                                logger.info("当前节点[{}]需高亮显示的流出线=[{}]", currentActivityId, sequenceFlow.getId());
+//                                log.info("当前节点[{}]需高亮显示的流出线=[{}]", currentActivityId, sequenceFlow.getId());
                                 highFlows.add(sequenceFlow.getId());
                                 // 暂时默认找到离当前节点最近的下一级节点即退出循环，否则有多条流出线时将全部被高亮显示
                                 ifFinded = true;
                                 break;
                             }
                         }
-//                        logger.info("[完成]-循环当前节点-ActivityId=【{}】的所有流出线", currentActivityId);
+//                        log.info("[完成]-循环当前节点-ActivityId=【{}】的所有流出线", currentActivityId);
                     }
                     if (ifFinded) {
                         // 暂时默认找到离当前节点最近的下一级节点即退出历史节点循环，否则有多条流出线时将全部被高亮显示
                         break;
                     }
                 }
-//                logger.info("【完成】-匹配当前节点-ActivityId=【{}】需要高亮显示的流出线", currentActivityId);
+//                log.info("【完成】-匹配当前节点-ActivityId=【{}】需要高亮显示的流出线", currentActivityId);
                 // if (!CollectionUtils.isEmpty(tempMapList)) {
                 // // 遍历匹配的集合，取得开始时间最早的一个
                 // long earliestStamp = 0L;

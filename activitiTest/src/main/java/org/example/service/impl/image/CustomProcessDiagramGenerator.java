@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class to generate an image based the diagram interchange information in a BPMN 2.0 process.
+ * 在 BPMN 2.0 流程中基于图表交换信息生成图像的类。
  *
  * @author Joram Barrez
  * @author Tijs Rademakers
@@ -472,7 +473,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
 
                 if (highLightedFlows.contains(sequenceFlow.getId()) && runningActivityFlowsIds.contains(sequenceFlow.getId())) {
                     processDiagramCanvas.drawLastSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault, highLighted);
-                }else {
+                } else {
                     processDiagramCanvas.drawSequenceflow(xPoints, yPoints, drawConditionalIndicator, isDefault, highLighted);
                 }
 
@@ -867,7 +868,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                                              List<String> highLightedFlows,
                                              String activityFontName,
                                              String labelFontName,
-                                             String annotationFontName){
+                                             String annotationFontName) {
         return generateProcessDiagram(bpmnModel,
                 highLightedActivities,
                 Collections.emptyList(),
@@ -883,7 +884,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                                              List<String> highLightedActivities,
                                              List<String> runningActivityIdList,
                                              List<String> highLightedFlows,
-                                             List<String> runningActivityFlowsIds){
+                                             List<String> runningActivityFlowsIds) {
         return generateProcessDiagram(bpmnModel,
                 highLightedActivities,
                 runningActivityIdList,
@@ -898,7 +899,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
     public InputStream generateDiagramCustom(BpmnModel bpmnModel,
                                              List<String> highLightedActivities,
                                              List<String> runningActivityIdList,
-                                             List<String> highLightedFlows){
+                                             List<String> highLightedFlows) {
         return generateProcessDiagram(bpmnModel,
                 highLightedActivities,
                 runningActivityIdList,
@@ -912,7 +913,7 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
     @Override
     public InputStream generateDiagramCustom(BpmnModel bpmnModel,
                                              List<String> highLightedActivities,
-                                             List<String> highLightedFlows){
+                                             List<String> highLightedFlows) {
         return generateProcessDiagram(bpmnModel,
                 highLightedActivities,
                 Collections.emptyList(),
