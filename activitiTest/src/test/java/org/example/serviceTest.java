@@ -1,10 +1,7 @@
 package org.example;
 
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.example.service.ProcessConfigService;
-import org.example.service.ProcessDefinitionService;
 import org.example.service.ProcessHistoryService;
 import org.example.service.ProcessInstanceService;
 import org.junit.Test;
@@ -19,10 +16,6 @@ import java.util.List;
 @SpringBootTest
 public class serviceTest {
 
-    @Autowired
-    ProcessConfigService processConfigService;
-    @Autowired
-    ProcessDefinitionService processDefinitionService;
     @Autowired
     ProcessHistoryService processHistoryService;
     @Autowired

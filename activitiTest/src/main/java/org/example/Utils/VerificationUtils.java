@@ -36,7 +36,7 @@ public class VerificationUtils {
     }
 
     /**
-     * Desc:检查历史流程实例是否存在
+     * Desc:检查历史流程实例是否存在，存在即返回该历史流程实例
      * 一对一寻找
      *
      * @param processInstanceId 流程实例ID
@@ -47,9 +47,11 @@ public class VerificationUtils {
                 .processInstanceId(processInstanceId)
                 .list();
         if (CollectionUtils.isEmpty(historicProcessInstance)) {
+            log.error("根据流程实例Id" + processInstanceId + "未找到历史流程实例");
             throw new ActivitiObjectNotFoundException("历史流程实例未找到");
         }
         if (historicProcessInstance.size() > 1) {
+            log.error("根据给定的流程实例Id" + processInstanceId + ", 查找到多个历史流程实例");
             throw new ArrayIndexOutOfBoundsException("同一历史流程实例id找到多个流程实例!");
         }
         return historicProcessInstance.get(0);
@@ -67,9 +69,11 @@ public class VerificationUtils {
                 .processInstanceId(processInstanceId)
                 .list();
         if (CollectionUtils.isEmpty(processInstance)) {
+            log.error("根据流程实例Id" + processInstanceId + "未找到流程实例");
             throw new ActivitiObjectNotFoundException("流程实例未找到");
         }
         if (processInstance.size() > 1) {
+            log.error("根据给定的流程实例Id" + processInstanceId + ", 查找到多个流程实例");
             throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
         }
         return processInstance.get(0);

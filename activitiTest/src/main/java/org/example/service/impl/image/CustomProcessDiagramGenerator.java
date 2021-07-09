@@ -3,6 +3,7 @@ package org.example.service.impl.image;
 import java.io.InputStream;
 import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * @author Joram Barrez
  * @author Tijs Rademakers
  */
+@Slf4j
 public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGenerator {
-    protected static final Logger logger = LoggerFactory.getLogger(CustomProcessDiagramGenerator.class);
 
     protected String ACTIVITY_FONT_NAME = "微软雅黑";
     protected String LABEL_FONT_NAME = "微软雅黑";
@@ -419,10 +420,10 @@ public class CustomProcessDiagramGenerator implements ICustomProcessDiagramGener
                  * 如果节点为当前正在处理中的节点，则红色高亮显示
                  */
                 if (runningActivityIdList.contains(flowNode.getId())) {
-                    logger.debug("[绘制]-当前正在处理中的节点-红色高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
+                    log.debug("[绘制]-当前正在处理中的节点-红色高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
                     drawRunningActivityHighLight(processDiagramCanvas, bpmnModel.getGraphicInfo(flowNode.getId()));
                 } else {
-                    logger.debug("[绘制]-高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
+                    log.debug("[绘制]-高亮显示节点[{}-{}]", flowNode.getId(), flowNode.getName());
                     drawHighLight(processDiagramCanvas, bpmnModel.getGraphicInfo(flowNode.getId()));
                 }
             }

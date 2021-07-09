@@ -1,5 +1,6 @@
 package org.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -30,6 +31,7 @@ import java.util.Map;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class AppTest {
 //    /**
 //     * 先建数据库，然后执行下面代码
@@ -47,7 +49,6 @@ public class AppTest {
 
     private static final String GROUP_LEADER_APPROVAL = "组长审批";
     private static final String APPLY = "申请";
-    private Logger logger = LoggerFactory.getLogger(AppTest.class);
 
     @Autowired
     RepositoryService repositoryService;
@@ -325,7 +326,7 @@ public class AppTest {
             if (id.equals(task.getProcessDefinitionId())) {
                 System.out.println("-——————————————" + task.getId());
             }
-            logger.info("Task available: " + task.getName());
+            log.info("Task available: " + task.getName());
         }
         Task task = tasks.get(0);
         System.out.println(task.getId());

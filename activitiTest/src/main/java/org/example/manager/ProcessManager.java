@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.example.Utils.VerificationUtils;
+import org.example.dto.ProcessDefinitionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * functions:
@@ -19,12 +21,12 @@ import java.util.*;
  */
 @Component
 @Slf4j
-public class ProcessConfigManager {
+public class ProcessManager {
 
     RepositoryService repositoryService;
 
     @Autowired
-    public ProcessConfigManager(RepositoryService repositoryService) {
+    public ProcessManager(RepositoryService repositoryService) {
         this.repositoryService = repositoryService;
     }
 
@@ -35,10 +37,9 @@ public class ProcessConfigManager {
      * @return 挂起状态 - > false
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean suspendProcessDefinitionByName(String processDefinitionName) {
+    public void suspendProcessDefinitionByName(String processDefinitionName) {
         ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.suspendProcessDefinitionById(processDefinition.getId());
-        return false;
     }
 
     /**
@@ -52,10 +53,9 @@ public class ProcessConfigManager {
      * @return 挂起状态 - > false
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean cascadeSuspendProcessDefinitionByName(String processDefinitionName, boolean cascade, Date suspensionDate) {
+    public void cascadeSuspendProcessDefinitionByName(String processDefinitionName, boolean cascade, Date suspensionDate) {
         ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.suspendProcessDefinitionById(processDefinition.getId(), cascade, suspensionDate);
-        return false;
     }
 
 
@@ -66,10 +66,9 @@ public class ProcessConfigManager {
      * @return 激活状态 - > true
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean activateProcessDefinitionByName(String processDefinitionName) {
+    public void activateProcessDefinitionByName(String processDefinitionName) {
         ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.activateProcessDefinitionById(processDefinition.getId());
-        return true;
     }
 
     /**
@@ -83,17 +82,15 @@ public class ProcessConfigManager {
      * @return 激活状态 - > true
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean cascadeActivateProcessDefinitionByName(String processDefinitionName, boolean cascade, Date activationDate) {
+    public void cascadeActivateProcessDefinitionByName(String processDefinitionName, boolean cascade, Date activationDate) {
         ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         repositoryService.activateProcessDefinitionById(processDefinition.getId(), cascade, activationDate);
-        return true;
     }
 
     /**
      * @param processDefinitionName 流程定义name
-     * @return 激活状态返回 - > true , 挂起状态返回 - > false
      */
-    public boolean getProcessDefinitionStatusByName(String processDefinitionName) {
+    public void getProcessDefinitionStatusByName(String processDefinitionName) {
         // 先检查是否存在，不需要获取返回值
         VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         // 获取激活装态下的它，如果处于激活能获取到，如果处于挂起则获取不到，能否获取到直接返回true、false
@@ -102,7 +99,6 @@ public class ProcessConfigManager {
                 .latestVersion()
                 .active()
                 .singleResult();
-        return Objects.nonNull(processDefinition);
     }
 
     /**
@@ -125,5 +121,60 @@ public class ProcessConfigManager {
         return map;
     }
 
+
+    /**
+     * @param processDefinitionName 流程定义name
+     * @return ProcessDefinition
+     */
+    public ProcessDefinitionDTO getProcessDefinitionByName(String processDefinitionName) {
+        return toProcessDefinitionDTO(VerificationUtils.checkProcessDefinitionByName(processDefinitionName));
+    }
+
+    /**
+     * @return 一个不可修改的流程定义列表
+     */
+    public Collection<ProcessDefinitionDTO> getProcessDefinitions() {
+        return Collections.unmodifiableList(repositoryService.createProcessDefinitionQuery()
+                .latestVersion()
+                .list())
+                .stream()
+                .map(this::toProcessDefinitionDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 普通删除，如果当前规则下有正在执行的流程，则抛异常
+     *
+     * @param processDefinitionName 流程定义name
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteProcessDefinitionByName(String processDefinitionName) {
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
+        repositoryService.deleteDeployment(processDefinition.getDeploymentId());
+    }
+
+    /**
+     * 级联删除,会删除和当前规则相关的所有信息，包括该流程定义下的所有的流程实例的历史数据
+     *
+     * @param processDefinitionName 流程定义name
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void cascadeDeleteProcessDefinitionByName(String processDefinitionName) {
+        ProcessDefinition processDefinition = VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
+        repositoryService.deleteDeployment(processDefinition.getDeploymentId(), true);
+    }
+
+    /**
+     * ProcessDefinition转换为ProcessDefinitionDTO
+     *
+     * @param processDefinition 流程定义
+     * @return ProcessDefinitionDTO
+     */
+    public ProcessDefinitionDTO toProcessDefinitionDTO(ProcessDefinition processDefinition) {
+        return new ProcessDefinitionDTO(
+                processDefinition.getId(),
+                processDefinition.getName(),
+                !processDefinition.isSuspended());
+    }
 
 }

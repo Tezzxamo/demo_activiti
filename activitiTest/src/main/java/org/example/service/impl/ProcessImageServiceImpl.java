@@ -20,6 +20,13 @@ public class ProcessImageServiceImpl implements ProcessImageService {
         this.processImageManager = processImageManager;
     }
 
+    /**
+     * 根据流程实例Id获取流程图
+     *
+     * @param procInstId 流程实例id
+     * @return inputStream
+     * @throws Exception exception
+     */
     @Override
     public InputStream getFlowImgByProcInstId(String procInstId) throws Exception {
         return processImageManager.getFlowImgByProcInstId(procInstId);

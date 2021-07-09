@@ -101,11 +101,11 @@ public class ProcessInstanceManager {
      * @param processInstanceId 流程实例id
      */
     @Transactional(rollbackFor = Exception.class)
-    public void completeProcessInstance(String processInstanceId, String userName) {
+    public void completeProcessInstance(String processInstanceId, String username) {
         VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
-                .taskAssignee(userName)
+                .taskAssignee(username)
                 .singleResult();
         if (Objects.isNull(task)) {
             throw new ActivitiObjectNotFoundException("task不存在或task没有审批人");
@@ -114,33 +114,33 @@ public class ProcessInstanceManager {
     }
 
     /**
-     * Desc:是userName这个用户成为对于该流程实例的审批人
+     * Desc:是username这个用户成为对于该流程实例的审批人
      *
      * @param processInstanceId 流程实例id
-     * @param userName          审批人
+     * @param username          审批人
      */
     @Transactional(rollbackFor = Exception.class)
-    public void claimProcessInstance(String processInstanceId, String userName) {
+    public void claimProcessInstance(String processInstanceId, String username) {
         VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
-        taskService.claim(task.getId(), userName);
+        taskService.claim(task.getId(), username);
     }
 
     /**
-     * Desc:使userName这个用户成为对于该流程实例的审批人（强制获取、用于强制更改）
+     * Desc:使username这个用户成为对于该流程实例的审批人（强制获取、用于强制更改）
      *
      * @param processInstanceId 流程实例id
-     * @param userName          审批人
+     * @param username          审批人
      */
     @Transactional(rollbackFor = Exception.class)
-    public void mandatoryClaimProcessInstance(String processInstanceId, String userName) {
+    public void mandatoryClaimProcessInstance(String processInstanceId, String username) {
         VerificationUtils.checkProcessInstanceById(processInstanceId);
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
-        taskService.setAssignee(task.getId(), userName);
+        taskService.setAssignee(task.getId(), username);
     }
 
     /**
