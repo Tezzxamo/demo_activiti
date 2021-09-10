@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +16,8 @@ import java.util.List;
 /**
  * Activiti启动类
  * 暂时屏蔽SpringSecurity
+ *
+ * @author Tethamo_zzx
  */
 @Slf4j
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
@@ -27,8 +27,12 @@ public class DemoApplication implements CommandLineRunner {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @Autowired
     RepositoryService repositoryService;
+
+    @Autowired
+    public DemoApplication(RepositoryService repositoryService) {
+        this.repositoryService = repositoryService;
+    }
 
     @Override
     public void run(String... args) {

@@ -1,25 +1,31 @@
 package org.example.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+/**
+ * 描述：流程定义DTO
+ *
+ * @author Tethamo_zzx
+ */
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProcessDefinitionDTO {
 
-    // 流程定义id
+    /**
+     * 流程定义id
+     */
     private String processDefinitionId;
 
-    // 流程定义name
+    /**
+     * 流程定义name
+     */
     private String processDefinitionName;
 
-    // 流程定义激活/挂起的状态
+    /**
+     * 流程定义激活/挂起的状态
+     */
     private Boolean status;
-
-    public ProcessDefinitionDTO(String processDefinitionId, String processDefinitionName, Boolean status) {
-        this.processDefinitionId = processDefinitionId;
-        this.processDefinitionName = processDefinitionName;
-        this.status = status;
-    }
-
-    public ProcessDefinitionDTO() {
-
-    }
 
     public String getProcessDefinitionId() {
         return processDefinitionId;
@@ -43,5 +49,14 @@ public class ProcessDefinitionDTO {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessDefinitionDTO{" +
+                "processDefinitionId='" + processDefinitionId + '\'' +
+                ", processDefinitionName='" + processDefinitionName + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
  * ②激活流程定义（普通、级联）
  * ③查询流程定义状态（单个、所有）
  * ④检查单个流程定义是否存在
+ *
+ * @author Tethamo_zzx
  */
 @Component
 @Slf4j
@@ -34,7 +36,6 @@ public class ProcessManager {
      * 将该流程定义挂起，则之后创建流程实例时会失败
      *
      * @param processDefinitionName 流程定义name
-     * @return 挂起状态 - > false
      */
     @Transactional(rollbackFor = Exception.class)
     public void suspendProcessDefinitionByName(String processDefinitionName) {
@@ -50,7 +51,6 @@ public class ProcessManager {
      * @param processDefinitionName 流程定义name
      * @param cascade               是否级联挂起
      * @param suspensionDate        多久之后开始挂起
-     * @return 挂起状态 - > false
      */
     @Transactional(rollbackFor = Exception.class)
     public void cascadeSuspendProcessDefinitionByName(String processDefinitionName, boolean cascade, Date suspensionDate) {
@@ -63,7 +63,6 @@ public class ProcessManager {
      * 将该流程定义激活，则之后创建流程实例时会成功
      *
      * @param processDefinitionName 流程定义name
-     * @return 激活状态 - > true
      */
     @Transactional(rollbackFor = Exception.class)
     public void activateProcessDefinitionByName(String processDefinitionName) {
@@ -79,7 +78,6 @@ public class ProcessManager {
      * @param processDefinitionName 流程定义name
      * @param cascade               是否级联激活
      * @param activationDate        多久之后开始激活
-     * @return 激活状态 - > true
      */
     @Transactional(rollbackFor = Exception.class)
     public void cascadeActivateProcessDefinitionByName(String processDefinitionName, boolean cascade, Date activationDate) {
@@ -88,9 +86,12 @@ public class ProcessManager {
     }
 
     /**
+     * 通过流程定义name获取流程定义状态
+     *
      * @param processDefinitionName 流程定义name
+     * @return ProcessDefinition 流程定义
      */
-    public void getProcessDefinitionStatusByName(String processDefinitionName) {
+    public Boolean getProcessDefinitionStatusByName(String processDefinitionName) {
         // 先检查是否存在，不需要获取返回值
         VerificationUtils.checkProcessDefinitionByName(processDefinitionName);
         // 获取激活装态下的它，如果处于激活能获取到，如果处于挂起则获取不到，能否获取到直接返回true、false
@@ -99,6 +100,7 @@ public class ProcessManager {
                 .latestVersion()
                 .active()
                 .singleResult();
+        return Objects.nonNull(processDefinition);
     }
 
     /**
@@ -131,12 +133,14 @@ public class ProcessManager {
     }
 
     /**
+     * 获取所有的流程定义DTO
+     *
      * @return 一个不可修改的流程定义列表
      */
     public Collection<ProcessDefinitionDTO> getProcessDefinitions() {
         return Collections.unmodifiableList(repositoryService.createProcessDefinitionQuery()
-                .latestVersion()
-                .list())
+                        .latestVersion()
+                        .list())
                 .stream()
                 .map(this::toProcessDefinitionDTO)
                 .collect(Collectors.toList());

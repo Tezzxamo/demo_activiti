@@ -6,6 +6,11 @@ import org.activiti.engine.runtime.ProcessInstance;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * 流程实例service
+ *
+ * @author Tethamo_zzx
+ */
 public interface ProcessInstanceService {
 
     /**
@@ -26,7 +31,7 @@ public interface ProcessInstanceService {
 
     /**
      * Desc:无论任何情况，清除所有的流程实例，实质上还是一个一个删除
-     * 当本身没有流程实例的时候使用此方法也不会报错
+     * (注:当本身没有流程实例的时候使用此方法也不会报错)
      */
     void clearAllProcessInstances();
 

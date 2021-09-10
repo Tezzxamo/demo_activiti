@@ -5,6 +5,11 @@ import org.activiti.engine.history.HistoricProcessInstance;
 
 import java.util.List;
 
+/**
+ * 流程-历史数据-service
+ *
+ * @author Tethamo_zzx
+ */
 public interface ProcessHistoryService {
 
     /**

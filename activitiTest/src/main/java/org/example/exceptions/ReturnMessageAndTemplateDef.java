@@ -1,8 +1,14 @@
 package org.example.exceptions;
 
+/**
+ * @author Tethamo_zzx
+ * @date 2021-9-10  下午 10:12
+ */
 public interface ReturnMessageAndTemplateDef {
     enum Errors{
-
+        /**
+         * 错误代码
+         */
         UNKNOWN_ERROR(                                      "00000001", "未知错误", false),
         INVALID_FILTER_TYPE(                                "00000002", "错误的流程过滤器类型[%s]", true),
         UNKNOWN_PROCESS_NAME(                               "00000003", "未知的流程名称或流程ID[%s]", true),

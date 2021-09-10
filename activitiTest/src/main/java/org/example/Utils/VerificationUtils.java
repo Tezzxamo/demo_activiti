@@ -9,6 +9,11 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+/**
+ * 校验工具类
+ *
+ * @author Tethamo_zzx
+ */
 @Slf4j
 public class VerificationUtils {
 

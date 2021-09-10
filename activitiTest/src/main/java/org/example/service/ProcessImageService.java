@@ -2,6 +2,11 @@ package org.example.service;
 
 import java.io.InputStream;
 
+/**
+ * 流程图service
+ *
+ * @author Tethamo_zzx
+ */
 public interface ProcessImageService {
 
     /**

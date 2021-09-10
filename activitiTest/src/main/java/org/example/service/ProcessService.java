@@ -49,12 +49,16 @@ public interface ProcessService {
     void cascadeActivateProcessDefinitionByName(String processDefinitionName, boolean cascade, Date activationDate);
 
     /**
+     * 根据流程定义name获取流程定义状态
+     *
      * @param processDefinitionName 流程定义name
      * @return 激活状态返回 - > true , 挂起状态返回 - > false
      */
-    void getProcessDefinitionStatusByName(String processDefinitionName);
+    Boolean getProcessDefinitionStatusByName(String processDefinitionName);
 
     /**
+     * 获取所有流程定义的状态
+     *
      * @return 返回所有流程定义的状态（挂起或激活）
      */
     Map<String, Boolean> getProcessConfigStatusMap();
