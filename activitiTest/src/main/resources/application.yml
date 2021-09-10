@@ -2,11 +2,10 @@ server:
   port: 8881
 spring:
   datasource:
-    platform: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/bct?currentSchema=workflow_service&characterEncoding=UTF-8&stringtype=unspecified
-    username: bct
-    password: kEaLJ9ZERLLN
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost:3306/activiti?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
 # 创建activiti数据库
   activiti:
     # 自动部署：false（不允许自动部署）
