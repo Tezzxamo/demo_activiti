@@ -12,7 +12,7 @@ public interface ReturnMessageAndTemplateDef {
         UNKNOWN_ERROR(                                      "00000001", "未知错误", false),
         INVALID_FILTER_TYPE(                                "00000002", "错误的流程过滤器类型[%s]", true),
         UNKNOWN_PROCESS_NAME(                               "00000003", "未知的流程名称或流程ID[%s]", true),
-        MULTI_PROCESS_BYNAME(                               "00000004", "根据给定的流程名称或流程ID[%s], 查找到多个流程定义", true),
+        MULTI_PROCESS_BY_NAME(                               "00000004", "根据给定的流程名称或流程ID[%s], 查找到多个流程定义", true),
         UNABLE_START_PROCESS(                               "00000005", "无法启动流程[%s], 请检查流程权限与场景限制或联系管理员查看系统设置", true),
         UNABLE_COMPLETE_TASK(                               "00000006", "无法完成事项[%s], 请检查用户流程权限与场景限制或联系管理员查看系统设置", true),
         UNKNOWN_ACTION_CLASS(                               "00000007", "未找到相应的代理行为[%s], 请联系管理员检查流程定义", true),
@@ -22,8 +22,8 @@ public interface ReturnMessageAndTemplateDef {
         SPRING_EMPTY_CONTEXT(                               "000000011", "application context未注入, 请联系开发人员", false),
 
         UNKNOWN_PROCESS_STARTABLE_FILTER(                   "000000012", "没有找到相应的ProcessStartableFilter[%s], 请联系开发人员", true),
-        UNKNOWN_TASK_COMPLETABLE_FILTER(                    "000000013", "没有找到相应的ProcessStartableFilter[%s], 请联系开发人员", true),
-        UNKNOWN_TASK_READABLE_FILTER(                       "000000014", "没有找到相应的ProcessStartableFilter[%s], 请联系开发人员", true),
+        UNKNOWN_TASK_COMPLETABLE_FILTER(                    "000000013", "没有找到相应的TaskCompletableFilter[%s], 请联系开发人员", true),
+        UNKNOWN_TASK_READABLE_FILTER(                       "000000014", "没有找到相应的TaskReadableFilter[%s], 请联系开发人员", true),
 
         PROCESS_STARTABLE_FILTER_NOT_FOUND_IN_SPRING_CONTAINER( "000000015", "未在Spring container 中找到相应的ProcessStartableFilter对象[%s], 请联系开发人员", true),
         TASK_COMPLETABLE_FILTER_NOT_FOUND_IN_SPRING_CONTAINER(  "000000016", "未在Spring container 中找到相应的TaskCompletableFilter对象[%s], 请联系开发人员", true),
@@ -85,7 +85,7 @@ public interface ReturnMessageAndTemplateDef {
         AUTH_TRIGGER_INFO(                                "000000070", "未查找到触发器：[%s]的权限信息", true),
         COUNTER_SIGN_GROUP_UPDATE_INFO(                   "000000071", "该审批组绑定的会签节点存在正在进行的任务,请结束后更新", true),
         SETTLEMENT_UPDATE_ERROR(                          "000000072", "结算审批：持仓编号%s,生命周期已经改变，请重新发起审批", true),
-        Amend_UPDATE_ERROR(                               "000000073", "交易要素修改审批：持仓编号%s,生命周期已经改变，请重新发起审批", true),
+        AMEND_UPDATE_ERROR(                               "000000073", "交易要素修改审批：持仓编号%s,生命周期已经改变，请重新发起审批", true),
         UNKNOWN_PROCESS_ERROR(                            "000000074", "部署的流程图错误请查看日志,更改后重新部署", false),
         NOT_FOUND_PROCESS_ERROR(                          "000000075", "根据路径未找到流程图,请重新确认文件路径", false),
         PROCESS_XML_ERROR(                                "000000076", "文件不符合bpmn规范请重新上传", false),
@@ -93,24 +93,22 @@ public interface ReturnMessageAndTemplateDef {
         ;
 
 
-        private String detailedErrorCode;
-        private String message;
-        private Boolean isTemplate;
+        private final String detailedErrorCode;
+        private final String message;
+        private final Boolean isTemplate;
 
-        Errors(String detailedErrorCode, String message, Boolean isTemplate){
+        Errors(String detailedErrorCode, String message, Boolean isTemplate) {
             this.detailedErrorCode = detailedErrorCode;
             this.message = message;
             this.isTemplate = isTemplate;
         }
 
-        public String getDetailedErrorCode(){
+        public String getDetailedErrorCode() {
             return detailedErrorCode;
         }
 
-        public String getMessage(Object... params){
-            return isTemplate
-                    ? String.format(message, params)
-                    : message;
+        public String getMessage(Object... params) {
+            return Boolean.TRUE.equals(isTemplate) ? String.format(message, params) : message;
         }
     }
 }

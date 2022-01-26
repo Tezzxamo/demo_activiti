@@ -1,5 +1,8 @@
 package org.example.exceptions;
 
+/**
+ * @author Tethamo
+ */
 public class CustomException extends RuntimeException {
     private final ErrorCode errorCode;
 

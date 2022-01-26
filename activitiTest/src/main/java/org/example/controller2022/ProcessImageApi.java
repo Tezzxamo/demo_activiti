@@ -1,4 +1,4 @@
-package org.example.api;
+package org.example.controller2022;
 
 import org.apache.commons.io.IOUtils;
 import org.example.exceptions.ActivitiCommonException;
@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * @author Tethamo
+ */
 @RestController
 public class ProcessImageApi {
 

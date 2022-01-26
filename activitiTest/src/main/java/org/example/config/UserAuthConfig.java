@@ -1,35 +1,41 @@
 package org.example.config;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.AuthUserDTO;
-import org.example.dto.UserDTO;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * 这个才是实际上activiti用户权限控制所需要的配置类，但是具体实现需要根据自己的系统去实现
+ *
+ * @author Tethamo
+ */
 //@Configuration
+@RequiredArgsConstructor
 public class UserAuthConfig {
 
-    // FIXME: 2020/12/16 ： 需要添加获取用户的manager层的注入，以及获取用户的角色列表的manager层的注
-    //  入,需要依据所处系统的自己的实现来对此处进行实现，即：留待扩展
+    // FIXME: 2020/12/16 ：
+    //  注入service/manager，如：private final UserService userService;
+    //  userService中需要有获取到实际用户的方法，参考DTO为：AuthUserDTO
+    //  即：留待扩展
 
     //    @Bean
     //    @Primary
     public UserDetailsService authUserDetailsService() {
         return username -> {
-            // 从数据库中查询 fixme
+            // fixme：使用实际查询出来的用户
             AuthUserDTO authUserDTO = null;
             return new UserDetails() {
                 // 返回分配给用户的角色列表 fixme ：如   "GROUP_" + roleName  [示例：GROUP_activitiTeam]
                 // FIXME: 2020/12/16 :
-                //      具体实现方法举例：获取用户所在的审批组，通过审批组获取
+                //      具体实现方法举例：获取用户所在的审批组，通过审批组获取，参考DemoApplicationConfiguration
                 @Override
                 public Collection<? extends GrantedAuthority> getAuthorities() {
-                    return null;
+                    return Collections.emptyList();
                 }
 
                 @Override
