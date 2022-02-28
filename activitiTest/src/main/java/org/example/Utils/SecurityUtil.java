@@ -1,8 +1,6 @@
 package org.example.Utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,15 +12,22 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
-@Component
+/**
+ * @author Tethamo
+ */
 @Slf4j
+@Component
 public class SecurityUtil {
 
     @Autowired
     private UserDetailsService userDetailsService;
 
+    /**
+     * 登录
+     *
+     * @param username 用户
+     */
     public void logInAs(String username) {
-
         UserDetails user = userDetailsService.loadUserByUsername(username);
         if (user == null) {
             throw new IllegalStateException("User " + username + " doesn't exist, please provide a valid user");

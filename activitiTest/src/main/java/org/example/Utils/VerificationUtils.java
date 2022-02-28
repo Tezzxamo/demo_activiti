@@ -1,10 +1,11 @@
 package org.example.Utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.ActivitiObjectNotFoundException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.example.Utils.function.FunctionUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @author Tethamo_zzx
  */
-@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VerificationUtils {
 
     /**
@@ -29,14 +30,9 @@ public class VerificationUtils {
                 .processDefinitionName(processDefinitionName)
                 .latestVersion()
                 .list();
-        if (CollectionUtils.isEmpty(processDefinition)) {
-            log.error("流程定义" + processDefinitionName + "未找到");
-            throw new ActivitiObjectNotFoundException("流程定义" + processDefinitionName + "未找到");// 待修改-整合
-        }
-        if (processDefinition.size() > 1) {
-            log.error("根据给定的流程名称" + processDefinitionName + ", 查找到多个版本一致的流程定义");
-            throw new ArrayIndexOutOfBoundsException("根据给定的流程名称" + processDefinitionName + ", 查找到多个流程定义");
-        }
+        // 判断错误并抛出
+        FunctionUtils.isWrong(CollectionUtils.isEmpty(processDefinition)).throwCustomException("流程定义" + processDefinitionName + "未找到");
+        FunctionUtils.isWrong(processDefinition.size() > 1).throwCustomException("根据给定的流程名称" + processDefinitionName + ", 查找到多个流程定义");
         return processDefinition.get(0);
     }
 
@@ -51,14 +47,9 @@ public class VerificationUtils {
         List<HistoricProcessInstance> historicProcessInstance = ActivitiUtil.instance().getHistoryService().createHistoricProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .list();
-        if (CollectionUtils.isEmpty(historicProcessInstance)) {
-            log.error("根据流程实例Id" + processInstanceId + "未找到历史流程实例");
-            throw new ActivitiObjectNotFoundException("历史流程实例未找到");
-        }
-        if (historicProcessInstance.size() > 1) {
-            log.error("根据给定的流程实例Id" + processInstanceId + ", 查找到多个历史流程实例");
-            throw new ArrayIndexOutOfBoundsException("同一历史流程实例id找到多个流程实例!");
-        }
+        // 判断错误并抛出
+        FunctionUtils.isWrong(CollectionUtils.isEmpty(historicProcessInstance)).throwCustomException("根据流程实例Id" + processInstanceId + "未找到历史流程实例");
+        FunctionUtils.isWrong(historicProcessInstance.size() > 1).throwCustomException("根据给定的流程实例Id" + processInstanceId + ", 查找到多个历史流程实例");
         return historicProcessInstance.get(0);
     }
 
@@ -73,14 +64,9 @@ public class VerificationUtils {
         List<ProcessInstance> processInstance = ActivitiUtil.instance().getRuntimeService().createProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .list();
-        if (CollectionUtils.isEmpty(processInstance)) {
-            log.error("根据流程实例Id" + processInstanceId + "未找到流程实例");
-            throw new ActivitiObjectNotFoundException("流程实例未找到");
-        }
-        if (processInstance.size() > 1) {
-            log.error("根据给定的流程实例Id" + processInstanceId + ", 查找到多个流程实例");
-            throw new ArrayIndexOutOfBoundsException("同一流程实例id找到多个流程实例!");
-        }
+        // 判断错误并抛出
+        FunctionUtils.isWrong(CollectionUtils.isEmpty(processInstance)).throwCustomException("根据流程实例Id" + processInstanceId + "未找到流程实例");
+        FunctionUtils.isWrong(processInstance.size() > 1).throwCustomException("根据给定的流程实例Id" + processInstanceId + ", 查找到多个流程实例");
         return processInstance.get(0);
     }
 
