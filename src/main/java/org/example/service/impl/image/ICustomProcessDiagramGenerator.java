@@ -1,7 +1,6 @@
 package org.example.service.impl.image;
 
 import org.activiti.bpmn.model.BpmnModel;
-import org.activiti.image.ProcessDiagramGenerator;
 
 import java.io.InputStream;
 import java.util.List;

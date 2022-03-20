@@ -1,13 +1,11 @@
 package org.example.service.impl.image;
 
+import lombok.extern.slf4j.Slf4j;
+import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.*;
+
 import java.io.InputStream;
 import java.util.*;
-
-import lombok.extern.slf4j.Slf4j;
-import org.activiti.bpmn.model.*;
-import org.activiti.bpmn.model.Process;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
