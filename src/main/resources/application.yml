@@ -15,19 +15,20 @@ spring:
     include: mysql
   # 创建activiti数据库
   activiti:
+    deployment-mode: never-fail # 关闭 SpringAutoDeployment
     # 自动部署：false（不允许自动部署）
-    check-process-definitions: false
+    check-process-definitions: ${ACTIVITI_AUTO_DEPLOY:false}
     db-history-used: true
     history-level: full
     # 默认值已经变成true了
     database-schema-update: true
 
-#    mail-server-host: 
-#    mail-server-port: 
-#    mail-server-default-from: 
-#    mail-server-user-name:
-#    mail-server-password:
-#    mail-server-use-ssl: 
+  #    mail-server-host:
+  #    mail-server-port:
+  #    mail-server-default-from:
+  #    mail-server-user-name:
+  #    mail-server-password:
+  #    mail-server-use-ssl:
   security:
     user:
       name: username

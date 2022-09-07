@@ -15,13 +15,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Transactional  // 默认回滚
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+        "MYSQL_USERNAME=root","MYSQL_PASSWORD=Hyperchain@1n","ACTIVITI_AUTO_DEPLOY=false"
+})
 public class InclusiveTest {
     @Autowired
     RepositoryService repositoryService;
@@ -230,7 +234,7 @@ public class InclusiveTest {
     }
 
     @Test
-    public void ReleaseTask1(){
+    public void ReleaseTask1() {
         String processDefinitionKey = "A";
         String candidateUser = "salaboy";
         securityUtil.logInAs(candidateUser);

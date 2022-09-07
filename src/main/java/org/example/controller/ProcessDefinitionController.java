@@ -28,9 +28,7 @@ public class ProcessDefinitionController {
     private final ProcessService processService;
 
     /**
-     * 测试 url：ip:port/v1/processDefinition/deploy?name=A&&resource=A
-     *
-     * @return 返回成功与否
+     * 测试 url：ip:port/v1/processDefinition/deploy?name=A&&bpmnPath=A
      */
     @GetMapping(value = "/deploy", name = "部署流程图")
     public ProcessDefinitionVO deploy(@RequestParam @NotBlank(message = "name不能为空") String name,

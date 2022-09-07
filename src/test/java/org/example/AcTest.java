@@ -21,12 +21,14 @@ import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
 import org.example.common.utils.SecurityUtil;
+import org.example.pojo.Person;
 import org.example.service.ProcessImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +37,11 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional  // 默认回滚
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+        "MYSQL_USERNAME=root","MYSQL_PASSWORD=Hyperchain@1n","ACTIVITI_AUTO_DEPLOY=false"
+})
 public class AcTest {
 
     @Autowired

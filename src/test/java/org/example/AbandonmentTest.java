@@ -14,12 +14,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Transactional  // 默认回滚
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+        "MYSQL_USERNAME=root","MYSQL_PASSWORD=Hyperchain@1n","ACTIVITI_AUTO_DEPLOY=false"
+})
 public class AbandonmentTest {
     @Autowired
     RepositoryService repositoryService;
@@ -41,7 +45,7 @@ public class AbandonmentTest {
 
 
     @Test
-    public void one(){
+    public void one() {
         //部署
         Deployment deployment = repositoryService.createDeployment()//添加一个部署对象
                 .name("废弃test")//添加部署的名字
@@ -59,32 +63,32 @@ public class AbandonmentTest {
         taskService.complete(task.getId());
 
         //完成复核修改信息
-        Map<String, Object> map = new HashMap();
-        map.put("confirm",false);
+        Map<String, Object> map = new HashMap<>();
+        map.put("confirm", false);
         Task task1 = taskService.createTaskQuery()
                 .taskAssignee("A")
                 .singleResult();
-        taskService.complete(task1.getId(),map);
+        taskService.complete(task1.getId(), map);
 
         //废弃(此废弃只能在act_hi_procinst中看到，因为它不是task也不是activity，废弃的具体操作在监听器中)
-        Map<String, Object> map1 = new HashMap();
-        map1.put("abandon",true);
-        taskService.complete(taskService.createTaskQuery().taskAssignee("A").singleResult().getId(),map1);
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("abandon", true);
+        taskService.complete(taskService.createTaskQuery().taskAssignee("A").singleResult().getId(), map1);
 
     }
 
     @Test
-    public void two(){
+    public void two() {
         historyService.createHistoricProcessInstanceQuery()
                 .list()
-                .forEach(t-> System.out.println(t.getId()));
+                .forEach(t -> System.out.println(t.getId()));
         System.out.println("###############################################");
         historyService.createHistoricTaskInstanceQuery()
                 .list()
-                .forEach(t-> System.out.println(t.getTaskDefinitionKey()));
+                .forEach(t -> System.out.println(t.getTaskDefinitionKey()));
         System.out.println("###############################################");
         historyService.createHistoricActivityInstanceQuery()
                 .list()
-                .forEach(t-> System.out.println(t.toString()));
+                .forEach(t -> System.out.println(t.toString()));
     }
 }

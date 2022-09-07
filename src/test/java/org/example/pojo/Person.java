@@ -1,4 +1,4 @@
-package org.example;
+package org.example.pojo;
 
 import java.util.Objects;
 

@@ -25,14 +25,9 @@ public class ProcessImageController {
 
     private final ProcessImageService processImageService;
 
-    /**
-     * 生成流程图
-     *
-     * @param processInstanceId   流程实例ID
-     * @param httpServletResponse response entity
-     */
-    @GetMapping("/{processInstanceId}/image")
-    public void processImageGet(@PathVariable("processInstanceId") @NotBlank(message = "processInstanceId不能为空") String processInstanceId, HttpServletResponse httpServletResponse) {
+    @GetMapping(value = "/{processInstanceId}/image", name = "生成流程图")
+    public void processImageGet(@PathVariable("processInstanceId") @NotBlank(message = "processInstanceId不能为空") String processInstanceId,
+                                HttpServletResponse httpServletResponse) {
         try (OutputStream outputStream = httpServletResponse.getOutputStream()) {
             InputStream img = processImageService.getFlowImgByProcInstId(processInstanceId);
             byte[] bytes = IOUtils.toByteArray(img);

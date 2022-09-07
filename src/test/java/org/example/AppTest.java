@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,9 +28,12 @@ import java.util.Map;
 /**
  *
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @Slf4j
+@Transactional  // 默认回滚
+@RunWith(SpringRunner.class)
+@SpringBootTest(properties = {
+        "MYSQL_USERNAME=root","MYSQL_PASSWORD=Hyperchain@1n","ACTIVITI_AUTO_DEPLOY=false"
+})
 public class AppTest {
 //    /**
 //     * 先建数据库，然后执行下面代码
@@ -386,32 +390,33 @@ public class AppTest {
     @Test
     public void susPt() {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("user","zzx");
-        runtimeService.startProcessInstanceByKey("Parallel",map);
+        map.put("user", "zzx");
+        runtimeService.startProcessInstanceByKey("Parallel", map);
 //        Map<String, Object> map = new HashMap<>();
         List<Task> zzx = taskService.createTaskQuery().taskAssignee("zzx")
                 .list();
         Task task = zzx.get(0);
-        map.put("uuid",123123);
+        map.put("uuid", 123123);
 //        taskService.setAssignee(task.getId(),"sala");
-        taskService.setVariables(task.getId(),map);
+        taskService.setVariables(task.getId(), map);
     }
 
     /**
      * 将原有的assignee变为owner，将第二个参数变成assignee:taskService.delegateTask(task.getId(),"userId");
      */
     @Test
-    public void susPpit(){
+    public void susPpit() {
         List<Task> list = taskService.createTaskQuery()
                 .processDefinitionKey("Parallel")
                 .active()
                 .list();
         // 第二个参数是删除原因
-        runtimeService.deleteProcessInstance(list.get(0).getProcessInstanceId(),"ddd");
+        runtimeService.deleteProcessInstance(list.get(0).getProcessInstanceId(), "ddd");
     }
 
     /**
      * HistoricProcessInstance的 Id 就是 ProcessInstance的 Id
+     *
      * @throws Exception e
      */
     @Test
@@ -421,7 +426,7 @@ public class AppTest {
                 .list();
         HistoricProcessInstance historicProcessInstance = parallel.get(0);
         String proInsId = historicProcessInstance.getId();
-        if (proInsId==null){
+        if (proInsId == null) {
             return;
         }
         InputStream image = imageService.getFlowImgByProcInstId(proInsId);
