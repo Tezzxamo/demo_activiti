@@ -20,7 +20,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
-import org.example.Utils.SecurityUtil;
+import org.example.common.utils.SecurityUtil;
 import org.example.service.ProcessImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,5 +1,12 @@
+## 此文件中的配置都是全局配置
 server:
-  port: 8881
+  port: ${SERVER_PORT:8801}
+  servlet:
+    session:
+      cookie:
+        ## 为0则不提供cookie，所以每次请求都需要验证
+        max-age: 0
+
 spring:
   profiles:
     # 使用application-mysql.yml
@@ -23,8 +30,9 @@ spring:
 #    mail-server-use-ssl: 
   security:
     user:
-      name: user
+      name: username
       password: password
+      roles: ADMIN
 #  thymeleaf:
 #    mode: HTML
 #    encoding: utf-8

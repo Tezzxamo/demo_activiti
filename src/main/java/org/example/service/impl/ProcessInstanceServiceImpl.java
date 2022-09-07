@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.example.manager.ProcessInstanceManager;
+import org.example.service.manager.ProcessInstanceManager;
 import org.example.service.ProcessInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

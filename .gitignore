@@ -176,7 +176,6 @@ artifacts/
 *.tlb
 *.tli
 *.tlh
-*.tmp
 *.tmp_proj
 *.log
 *.vspscc
@@ -302,7 +301,6 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
-*~
 *.dbmdl
 *.dbproj.schemaview
 *.pfx
@@ -421,7 +419,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 
 # Flask stuff:
@@ -463,7 +460,6 @@ ENV/
 ### Node ###
 # Logs
 logs
-*.log
 npm-debug.log*
 
 # Runtime data
@@ -513,12 +509,10 @@ luac.out
 *.o
 *.os
 *.ko
-*.obj
 *.elf
 
 # Precompiled Headers
 *.gch
-*.pch
 
 # Libraries
 *.lib
@@ -530,7 +524,6 @@ luac.out
 
 # Shared objects (inc. Windows DLLs)
 *.dll
-*.so
 *.so.*
 *.dylib
 
@@ -618,115 +611,7 @@ $RECYCLE.BIN/
 *.lnk
 
 
-### PyCharm ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-# User-specific stuff:
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
-# Sensitive or high-churn files:
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/dataSources.local.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-
-# Gradle:
-.idea/gradle.xml
-.idea/libraries
-
-# Mongo Explorer plugin:
-.idea/mongoSettings.xml
-
-## File-based project format:
-*.iws
-
-## Plugin-specific files:
-
-# IntelliJ
-/out/
-
-# mpeltonen/sbt-idea plugin
-.idea_modules/
-
-# JIRA plugin
-atlassian-ide-plugin.xml
-
-# Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-
-### PyCharm Patch ###
-# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
-
-# *.iml
-# modules.xml
-
-
-### WebStorm ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-# User-specific stuff:
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
-# Sensitive or high-churn files:
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/dataSources.local.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-
-# Gradle:
-.idea/gradle.xml
-.idea/libraries
-
-# Mongo Explorer plugin:
-.idea/mongoSettings.xml
-
-## File-based project format:
-*.iws
-
-## Plugin-specific files:
-
-# IntelliJ
-/out/
-
-# mpeltonen/sbt-idea plugin
-.idea_modules/
-
-# JIRA plugin
-atlassian-ide-plugin.xml
-
-# Crashlytics plugin (for Android Studio and IntelliJ)
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-
-### WebStorm Patch ###
-# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
-
-# *.iml
-# modules.xml
-
-
-### Code ###
 # Visual Studio Code - https://code.visualstudio.com/
-.settings/
 .vscode/
 
 
@@ -738,14 +623,12 @@ fabric.properties
 Session.vim
 # temporary
 .netrwhist
-*~
 # auto-generated tag files
 tags
 
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
-*~
 \#*\#
 /.emacs.desktop
 /.emacs.desktop.lock
@@ -806,7 +689,6 @@ flycheck_*.el
 hs_err_pid*
 
 ### Maven ###
-target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup

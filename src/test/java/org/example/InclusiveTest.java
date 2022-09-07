@@ -9,7 +9,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.example.Utils.SecurityUtil;
+import org.example.common.utils.SecurityUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

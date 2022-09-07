@@ -1,23 +1,22 @@
-package org.example.service.impl;
+package org.example.service.manager;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
-import org.example.service.manager.ProcessHistoryManager;
-import org.example.service.ProcessHistoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.example.common.utils.VerificationUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
-public class ProcessHistoryServiceImpl implements ProcessHistoryService {
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class ProcessHistoryManager {
 
-    ProcessHistoryManager processHistoryManager;
+    private final HistoryService historyService;
 
-    @Autowired
-    public ProcessHistoryServiceImpl(ProcessHistoryManager processHistoryManager) {
-        this.processHistoryManager = processHistoryManager;
-    }
 
     /**
      * Desc: 通过流程实例ID获取历史流程实例
@@ -25,9 +24,8 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      * @param processInstanceId 流程实例Id
      * @return 历史流程实例
      */
-    @Override
     public HistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return processHistoryManager.getHistoricProcessInstance(processInstanceId);
+        return VerificationUtils.checkHistoricProcessInstanceById(processInstanceId);
     }
 
     /**
@@ -36,9 +34,12 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      * @param processInstanceId 流程实例Id
      * @return 已经执行的节点
      */
-    @Override
     public List<HistoricActivityInstance> getHistoricActivityInstancesAsc(String processInstanceId) {
-        return processHistoryManager.getHistoricActivityInstancesAsc(processInstanceId);
+        return historyService.createHistoricActivityInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByHistoricActivityInstanceId()
+                .asc()
+                .list();
     }
 
     /**
@@ -47,8 +48,12 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
      * @param processInstanceId 流程实例ID
      * @return 已经完成的历史流程实例
      */
-    @Override
     public List<HistoricProcessInstance> getHistoricFinishedProcessInstance(String processInstanceId) {
-        return processHistoryManager.getHistoricFinishedProcessInstance(processInstanceId);
+        return historyService.createHistoricProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .finished()
+                .list();
     }
+
+
 }

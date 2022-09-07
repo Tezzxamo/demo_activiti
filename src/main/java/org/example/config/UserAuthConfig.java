@@ -1,7 +1,7 @@
 package org.example.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dto.AuthUserDTO;
+import org.example.model.dto.AuthUserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

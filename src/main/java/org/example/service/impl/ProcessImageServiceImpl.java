@@ -1,8 +1,8 @@
 package org.example.service.impl;
 
-import org.example.manager.ProcessImageManager;
+import lombok.RequiredArgsConstructor;
+import org.example.service.manager.ProcessImageManager;
 import org.example.service.ProcessImageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +14,11 @@ import java.io.InputStream;
  * @author Tethamo_zzx
  */
 @Service
+@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class ProcessImageServiceImpl implements ProcessImageService {
 
-    ProcessImageManager processImageManager;
-
-    @Autowired
-    public ProcessImageServiceImpl(ProcessImageManager processImageManager) {
-        this.processImageManager = processImageManager;
-    }
+    private final ProcessImageManager processImageManager;
 
     /**
      * 根据流程实例Id获取流程图
