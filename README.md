@@ -10,3 +10,9 @@ demo_activiti:该项目目前主要针对activiti7的一些功能做了开发
   
 
 如果有什么问题，可以在此处提issue，或者在跳转过来之前的CSDN中评论，如果我有相应的解决方法，会给出我的办法。
+
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/Tezzxamo/demo_activiti.svg)](https://starchart.cc/Tezzxamo/demo_activiti)
