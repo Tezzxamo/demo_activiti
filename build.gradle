@@ -34,6 +34,7 @@ dependencies {
     api 'org.projectlombok:lombok:1.18.24'
     api 'com.alibaba:fastjson:2.0.12'
     api 'com.alibaba:druid-spring-boot-starter:1.2.9'
+    api 'org.springdoc:springdoc-openapi-ui:1.6.14'
     runtimeOnly 'com.h2database:h2:1.4.200'
     runtimeOnly 'mysql:mysql-connector-java:8.0.29'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.1.12.RELEASE'

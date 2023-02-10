@@ -18,7 +18,7 @@ import java.time.Instant;
 @Transactional  // 默认回滚
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {
-        "MYSQL_USERNAME=root","MYSQL_PASSWORD=Hyperchain@1n","ACTIVITI_AUTO_DEPLOY=false"
+        "MYSQL_USERNAME=root","MYSQL_PASSWORD=123456","ACTIVITI_AUTO_DEPLOY=false"
 })
 public class ImageTest {
 

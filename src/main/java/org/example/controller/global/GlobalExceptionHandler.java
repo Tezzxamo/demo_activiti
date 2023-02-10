@@ -1,4 +1,4 @@
-package org.example.exceptions.global;
+package org.example.controller.global;
 
 
 import lombok.extern.slf4j.Slf4j;

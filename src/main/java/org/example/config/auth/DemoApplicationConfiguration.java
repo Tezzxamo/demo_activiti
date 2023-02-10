@@ -1,4 +1,4 @@
-package org.example.config;
+package org.example.config.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

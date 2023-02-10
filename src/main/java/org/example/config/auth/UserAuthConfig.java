@@ -1,4 +1,4 @@
-package org.example.config;
+package org.example.config.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.AuthUserDTO;
