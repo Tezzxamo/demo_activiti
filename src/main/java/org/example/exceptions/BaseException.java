@@ -1,7 +1,9 @@
 package org.example.exceptions;
 
 
-import org.example.common.ReturnMsg;
+import org.example.common.factory.RFactory;
+import org.example.enumeration.CodeEnum;
+import org.example.model.base.R;
 
 /**
  * 基本异常
@@ -10,7 +12,7 @@ import org.example.common.ReturnMsg;
  */
 public abstract class BaseException extends RuntimeException {
 
-    private ReturnMsg returnMsg;
+    private R<?> r;
 
     BaseException() {
         super();
@@ -18,20 +20,23 @@ public abstract class BaseException extends RuntimeException {
 
     BaseException(int codeInt, String msg) {
         super(msg);
-        this.returnMsg = new ReturnMsg(codeInt, msg);
+        this.r = RFactory.newResult(CodeEnum.getEnumByCode(codeInt), msg);
     }
 
     public int getCodeInt() {
-        return returnMsg.getReturnCode();
+        return r.getCode();
     }
 
-    public Object getMsg() {
-        return returnMsg.getReturnMessage();
+    public Object getResult() {
+        return r.getResult();
     }
 
+    public String getMsg() {
+        return r.getMessage();
+    }
 
-    public ReturnMsg getReturnMsg() {
-        return returnMsg;
+    public R<?> getReturnMsg() {
+        return r;
     }
 
 }

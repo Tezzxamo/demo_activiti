@@ -1,7 +1,7 @@
 package org.example.service.impl;
 
 import org.activiti.engine.task.Task;
-import org.example.model.UserDTO;
+import org.example.model.dto.UserDTO;
 import org.example.service.TaskService;
 
 import java.util.Collection;
