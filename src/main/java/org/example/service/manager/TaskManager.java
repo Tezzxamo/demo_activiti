@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
-import org.example.model.UserDTO;
+import org.example.model.dto.UserDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;

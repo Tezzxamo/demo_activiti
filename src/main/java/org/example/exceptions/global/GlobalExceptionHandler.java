@@ -1,10 +1,12 @@
 package org.example.exceptions.global;
 
 
-import org.example.common.ReturnMsg;
+import lombok.extern.slf4j.Slf4j;
+import org.example.common.factory.RFactory;
 import org.example.exceptions.BusinessException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,18 +20,18 @@ import java.util.stream.Collectors;
 
 import static org.example.enumeration.CodeEnum.*;
 
-
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Object handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return new ReturnMsg(ERROR.getCode(), "Required request body is missing!");
+        return RFactory.newResult(ERROR, "Required request body is missing!");
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Object handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        return new ReturnMsg(ERROR.getCode(), e.getMessage());
+        return RFactory.newResult(ERROR, e.getMessage());
     }
 
 
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public Object handleNullPointerException(NullPointerException e) {
         String message = Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining(","));
-        return new ReturnMsg(NULL_POINTER_ERROR.getCode(), NULL_POINTER_ERROR.description() + message);
+        return RFactory.newResult(NULL_POINTER_ERROR, message);
     }
 
     /**
@@ -50,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public Object bindExceptionHandler(BindException e) {
         String message = e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(","));
-        return new ReturnMsg(VALIDATION_ERROR.getCode(), VALIDATION_ERROR.description() + message);
+        return RFactory.newResult(VALIDATION_ERROR, message);
     }
 
     /**
@@ -59,7 +61,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public Object constraintViolationExceptionHandler(ConstraintViolationException e) {
         String message = e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(","));
-        return new ReturnMsg(VALIDATION_ERROR.getCode(), VALIDATION_ERROR.description() + message);
+        return RFactory.newResult(VALIDATION_ERROR, message);
     }
 
     /**
@@ -68,8 +70,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Object methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(","));
-        return new ReturnMsg(VALIDATION_ERROR.getCode(), VALIDATION_ERROR.description() + message);
+        return RFactory.newResult(VALIDATION_ERROR, message);
     }
 
+    /**
+     * 处理异常-兜底处理
+     *
+     * @param e e
+     * @return {@link Object}
+     */
+    @ExceptionHandler(Exception.class)
+    public Object handleException(Exception e) throws Exception {
+        // 如果捕获到抛出了AccessDeniedException异常,交由Spring Security处理，此处直接继续抛出即可
+        if (e instanceof AccessDeniedException) {
+            throw e;
+        }
+        log.error("未知异常！原因是:", e);
+        return RFactory.newError(e.getMessage());
+    }
 
 }
