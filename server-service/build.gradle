@@ -1,0 +1,11 @@
+//子项目需要的jar包
+dependencies {
+    // 引入子模块
+    implementation project(':common-service')
+    implementation project(':auth-service')
+
+
+}
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}

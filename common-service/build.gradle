@@ -1,0 +1,15 @@
+//子项目需要的jar包
+dependencies {
+//    // validation
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    // aspect
+//    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+
+    // 公用依赖
+
+
+}
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}
